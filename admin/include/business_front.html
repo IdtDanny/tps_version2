@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin | Business</title>
+
+    <!-- Icon Header -->
+    <link rel="shortcut icon" type="image/png" href="../public/img/card_Header.png">
+
+    <!-- Core CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <link rel="stylesheet" href="../node_modules/css/main.min.css">
+
+    <!-- Icons CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+</head>
+<style>
+    section {
+        padding: 50px 0px;
+    }
+    
+    .just {
+        text-align: justify;
+    }
+</style>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+        <div class="container-xxl">
+            <a href="#dashboard" class="navbar-brand">
+                <span class="text-altlight fw-medium ps-4 display-6">Tap & Pay</span>
+            </a>
+            <!-- Toggle button for mobile nav -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main-nav" aria-controls="main-nav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- navbar links -->
+            <div class="collapse navbar-collapse justify-content-end align-center ps-4" id="main-nav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a href="index.php" class="nav-link">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="client.php" class="nav-link">Clients</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="agent.php" class="nav-link">Agents</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="business.php" class="nav-link d-md-block d-none bi-arrow-clockwise"></a>
+                    </li>
+                    <li class="nav-item d-md-none">
+                        <a href="#notify" class="nav-link">Notification</a>
+                    </li>
+                    <!-- <li class="nav-item ms-2 d-none d-md-inline"> -->
+                    <li class="nav-item ms-2 d-md-inline">
+                        <a href="logout.php" class="btn btn-light">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Business Profile Tables -->
+    <section id="dashboard bg-light">
+        <div class="container-md">
+
+            <!-- row for admin profile -->
+            <div class="row">
+
+                <!-- Displaying user profile -->
+                <div class="col">
+                    <h2 class="float-start">
+                        <!-- browsing profile picture or else user svg used -->
+                        <?php if($adminResults->admin_profile): ?>
+                        <img src="../public/profile/<?php echo $adminResults->admin_profile ?>" alt="Profile" class="img-fluid rounded-1" style="width: 40px;">
+                        <?php else: ?>
+                        <img src="../public/img/user-profile.svg" alt="eBook" class="rounded-5 img-thumbnail p-5 border-2 border-dark">
+                        <?php endif ?>
+                        <span class="text-altprimary fw-bold text-uppercase">
+                            <?php # $adminResults->admin_name ?> Business <span class="d-md-inline-block d-none">list</span>
+                        </span>
+                    </h2>
+                </div>
+
+                <!-- button for registering and withdraw business balance -->
+                <div class="col">
+                    <div class="input-group justify-content-end">
+                        <button class="btn btn-outline-gold text-dark bi-person-add" data-bs-toggle="modal" data-bs-target="#registerModal" data-bs-whatever="@register"><span class="d-lg-inline-block d-none">&nbsp;Register</span></button>
+                        <button class="btn btn-gold bi-box-arrow-down" title="Register" data-bs-toggle="modal" data-bs-target="#withdrawModal" data-bs-whatever="@withdraw"><span class="d-lg-inline-block d-none" title="Withdraw">&nbsp;Withdraw</span></button>
+                    </div>
+                </div>
+
+            </div>
+            <p class="text-muted">Review business current performance.</p>
+
+            <!-- document download button -->
+            <form method="post" class="d-md-none d-flex">
+                <a href="business.php" class="btn btn-outline-gold text-dark d-lg-none d-md-none bi-arrow-clockwise justify-content-end"></a>
+                <span class="input-group justify-content-end">
+                    <a href="export/export_excel.php" type="submit" name="export_excel" class="btn btn-outline-success bi-filetype-xlsx jus" title="View More Details"> <span class="d-md-inline-block d-none">Excel</span></a>
+                <a href="export/export_pdf.php" type="submit" name="export_pdf" class="btn btn-altorange bi-file-pdf bi-download" title="View More Details"> <span class="d-md-inline-block d-none">Pdf</span></a>
+                </span>
+            </form>
+
+            <!-- row for business table and list for small media -->
+            <div class="row my-0 g-3 justify-content-around align-items-center">
+                <div class="col-lg-12 col-lg-6">
+
+                    <?php if($busy_errorMessage || $busy_deleteErrorMessage || $update_errorMessage) { ?>
+                    <div class="alert alert-warning alert-dismissible fade show alert-danger" role="alert">
+                        <strong class="bi bi-exclamation-triangle"><?php echo $busy_errorMessage; echo $busy_deleteErrorMessage; echo $update_errorMessage; ?></strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+
+                    <?php } ?>
+
+                    <?php if($busy_successMessage || $busy_deleteSuccessMessage || $update_successMessage) { ?>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <strong class="bi bi-check2-all"><?php echo $busy_successMessage; echo $busy_deleteSuccessMessage; echo $update_successMessage ?></strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    <?php } ?>
+
+                    <!-- for large media -->
+                    <div class="d-lg-block d-none text-capitalize">
+                        <table class="table table-hover">
+                            <caption class="text-center fw-light">List of Registered businesses</caption>
+                            <thead class="table-dark">
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col"><i class="bi bi-person-circle"></i></th>
+                                    <th scope="col">Created_at</th>
+                                    <th scope="col">Full Name</th>
+                                    <th scope="col">TIN</th>
+                                    <th scope="col">Type</th>
+                                    <th scope="col">Pin</th>
+                                    <th scope="col">Balance</th>
+                                    <th scope="col">Update</th>
+                                    <th scope="col">Delete</th>
+                                    <th scope="col">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php $no = 1; foreach($business_Result as $business) { ?>
+                                <tr>
+                                    <th scope="row">
+                                        <?php echo $no ?>
+                                    </th>
+                                    <td><img src="../public/profile/<?php echo $business->photo ?>" alt="Profile" class="img-fluid rounded-1" style="width: 30px;"></td>
+                                    <td>
+                                        <?php echo date('M d, Y', strtotime($business->Date)) ?>
+                                    </td>
+                                    <?php 
+                                    if ($business->status != "Active") {
+                                        echo "<td class='text-uppercase text-danger'>" . $business->business_name . "</td>";
+                                    } else {
+                                        echo "<td class='text-uppercase'>" . $business->business_name . "</td>";
+                                    }
+                                ?>
+                                    <td>
+                                        <?php echo $business->business_tin ?>
+                                    </td>
+                                    <td>
+                                        <?php echo $business->business_type ?>
+                                    </td>
+                                    <td>
+                                        <?php echo $business->business_pin ?>
+                                    </td>
+                                    <td class="text-end">
+                                        <?php echo number_format($business->balance) ?>
+                                    </td>
+                                    <td class="text-center"><a href="#" class="btn btn-sm btn-altprimary" data-bs-toggle="modal" data-bs-target="#updateModal" data-bs-whatever="@update"><i class="bi bi-pencil-square"></i> Update</a></td>
+                                    <td class="text-center"><a href="business.php?dbID=<?php echo $business->bID ?>" class="btn btn-sm btn-danger"><i class="bi bi-trash3"></i> Delete</a></td>
+                                    <!-- <td class="text-center"><a href="#?bID=<?php echo $business->bID ?>" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" data-bs-whatever="@delete"><i class="bi bi-trash3"></i> Delete</a></td> -->
+                                    <?php 
+                                    if ($business->status == "Active") {
+                                        echo "<td class='fw-light text-altlight bg-success text-center'><small>" . $business->status . "</small></td>"; 
+                                    } else {
+                                        echo "<td class='fw-light text-altlight bg-danger text-center'><small>" . $business->status . "</small></td>";
+                                    }
+                                ?>
+                                </tr>
+                                <?php $no++; } ?>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- For small media -->
+                    <div class="list-group d-lg-none">
+                        <?php foreach ($business_Result as $busy_count => $business){ ?>
+                        <?php 
+                            # To list few of agents. 
+                                #if ($busy_count != 0) {
+                                #    continue;
+                                #}
+                                #else {
+                        ?>
+                        <div class="list-group-item py-3">
+                            <h5 class="mb-1 text-uppercase">
+                                <?php if ($business->business_type == "gas") { ?>
+                                <i class="bi-fuel-pump text-dark-emphasis"></i>
+                                <?php } else { ?>
+                                <i class="bi-shop text-dark-emphasis"></i>
+                                <?php } ?> &nbsp;
+                                <?php 
+                                    if ($business->status == "Active") {
+                                        echo "<span class='text-success'>". $business->business_name . "</span>";
+                                ?>
+                                <span class="badge fw-light bg-success float-end"><small><?php echo "$business->status" ?></small></span>
+                                <?php 
+                                    } else {
+                                        echo "<span class='text-danger'>". $business->business_name . "</span>";
+                                ?>
+                                <span class="badge fw-light bg-danger float-end"><small><?php echo "$business->status" ?></small></span>
+                                <?php } ?>
+                            </h5>
+
+                            <!-- Fetch Business Location -->
+                            <p class="mb-1 fw-medium">Location:
+                                <span class="fw-light float-end">
+                                <?php
+                                    # Fetching business location info ...
+
+                                    $business_tin = $business->business_tin;
+
+                                    $buslocation_FetchQuery = 'SELECT * FROM `business_location` WHERE `business_tin` = :btin';
+                                    $buslocation_FetchStatement = $pdo->prepare($buslocation_FetchQuery);
+                                    $buslocation_FetchStatement->execute([
+                                                'btin'  =>  $business_tin
+                                            ]);
+                                    $buslocation_Result = $buslocation_FetchStatement->fetch(); 
+
+                                    echo $buslocation_Result->district . " District - ";
+                                    echo $buslocation_Result->sector . " Sector";
+                                ?>
+                                </span>
+                            </p>
+
+                            <!-- Fetch Tin -->
+                            <p class="mb-1 fw-medium">TIN:
+                                <span class="fw-light float-end">
+                                    <?php echo $business->business_tin ?>
+                                </span>
+                            </p>
+
+                            <!-- Fetch Pin -->
+                            <p class="mb-1 fw-medium">Pin:
+                                <span class="fw-light float-end">
+                                    <?php echo $business->business_pin ?>
+                                </span>
+                            </p>
+
+                            <!-- Fetch Balance -->
+                            <p class="mb-1 fw-medium">Balance:
+                                <span class="fw-medium float-end">
+                                    <?php echo number_format($business->balance) ?> Rwf
+                                </span>
+                            </p>
+
+                            <!-- update and delete modal triggers -->
+                            <small class="fw-light fst-italic">
+                                Registered on <?php echo date('M d, Y', strtotime($business->Date)) ?>
+                                <span class="btn-group-sm float-end">
+                                    <button class="btn btn-altdash bi-pencil-square" title="Update" data-bs-toggle="modal" data-bs-target="#updateModal" data-bs-whatever="@update"><span class="d-md-inline-block d-none">&nbsp;Update</span></button>
+                                    <a href="business.php?dbID=<?php echo $business->bID ?>" class="btn btn-danger bi-trash3" title="Delete"><span class="d-md-inline-block d-none">&nbsp;Delete</span></a>                                    
+                                    <!-- <button class="btn btn-danger bi-trash3" title="Delete" data-bs-toggle="modal" data-bs-target="#deleteModal" data-bs-whatever="@delete"><span class="d-md-inline-block d-none">&nbsp;Delete</span></button>                                     -->
+                                </span>
+                            </small>
+                        </div>
+                        <?php # } ?>
+                        <?php } ?>
+                    </div>
+                    <form method="post" class="input-group justify-content-end d-md-flex d-none">
+                        <a href="export/export_excel.php" type="submit" name="export_excel" class="btn btn-outline-success float-end mt-3 bi-filetype-xlsx" title="View More Details"> <span class="d-md-inline-block d-none">Excel</span></a>
+                        <a href="export/export_pdf.php" type="submit" name="export_excel" class="btn btn-altorange float-end mt-3 bi-file-pdf bi-download" title="View More Details"> <span class="d-md-inline-block d-none">Pdf</span></a>
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- get updates / modal trigger -->
+    <section class="bg-light">
+        <div class="container">
+            <div class="text-center">
+                <!-- <h2>Stay in the Loop</h2> -->
+                <p class="lead">Copyrights &copy; 2023</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal Lists -->
+    <div>
+        <!-- register modal -->
+        <div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-gold">
+                        <h1 class="modal-title fs-5 text-uppercase bi-person-add fw-bold" id="exampleModalLabel"> Register business</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <form action="" method="post" enctype="multipart/form-data">
+                        <div class="modal-body">
+                            <p class="text-muted text-center bi-exclamation-triangle"> Default username and password will be TIN</p>
+
+                            <!-- post name -->
+                            <div class="mb-4 input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-house-fill"></i>
+                                </span>
+                                <input type="text" name="business_name" class="form-control" placeholder="Business Name">
+
+                                <!-- tooltips -->
+                                <span class="input-group-text">
+                                    <span class="tt" data-bs-placement="bottom" title="Add your business name">
+                                        <i class="bi bi-info"></i>
+                                    </span>
+                                </span>
+                            </div>
+
+                            <!-- post business_type -->
+                            <div class="input-group mb-4">
+                                <label class="input-group-text bi-unity" for="inputGroupSelect01">&nbsp;Type</label>
+                                <select class="form-select" name="business_type" id="inputGroupSelect01">
+                                    <option selected>Choose ...</option>
+                                    <option value="gas">Gas station</option>
+                                    <option value="others">Other</option>
+                                </select>
+                            </div>
+
+                            <!-- post_email -->
+                            <div class="mb-4 input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-envelope-fill"></i>
+                                </span>
+                                <input type="email" name="business_mail" id="email" class="form-control" placeholder="Email address">
+
+                                <!-- tooltips -->
+                                <span class="input-group-text">
+                                    <span class="tt" data-bs-placement="bottom" title="Add your email address.">
+                                        <i class="bi bi-info"></i>
+                                    </span>
+                                </span>
+                            </div>
+
+                            <!-- business tin -->
+                            <div class="mb-4 input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-123"></i>
+                                </span>
+                                <input type="text" name="business_tin" id="name" class="form-control" placeholder="Business TIN" required>
+
+                                <!-- tooltips -->
+                                <span class="input-group-text">
+                                    <span class="tt" data-bs-placement="bottom" title="Add your Tax Identification Number">
+                                        <i class="bi bi-info"></i>
+                                    </span>
+                                </span>
+                            </div>
+
+                            <!-- business profile -->
+                            <div class="input-group mb-3">
+                                <label class="input-group-text bi-upload" for="inputGroupFile01"></label>
+                                <input type="file" name="business_profile" class="form-control" id="inputGroupFile01">
+
+                                <!-- tooltips -->
+                                <span class="input-group-text">
+                                    <span class="tt" data-bs-placement="bottom" title="Add your profile photo">
+                                        <i class="bi bi-info"></i>
+                                    </span>
+                                </span>
+                            </div>
+
+                            <p class="lead text-gold fw-bold bi-globe text-uppercase text-center"> Location</p>
+
+                            <!-- location -->
+                            <div class="mb-4 input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-globe"></i>
+                                </span>
+                                <input type="text" name="business_district" class="form-control" placeholder="District" required>
+                                <input type="text" name="business_sector" class="form-control" placeholder="Sector" required>
+
+                                <!-- tooltips -->
+                                <span class="input-group-text">
+                                    <span class="tt" data-bs-placement="bottom" title="Add current working location">
+                                        <i class="bi bi-info"></i>
+                                    </span>
+                                </span>
+                            </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" name="registerbusiness" class="btn btn-gold float-end">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- withdraw modal -->
+        <div class="modal fade" id="withdrawModal" tabindex="-1" aria-labelledby="withdrawModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">New message</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="mb-3">
+                                <label for="recipient-name" class="col-form-label">Recipient:</label>
+                                <input type="text" class="form-control" id="recipient-name">
+                            </div>
+                            <div class="mb-3">
+                                <label for="message-text" class="col-form-label">Message:</label>
+                                <textarea class="form-control" id="message-text"></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary">Send message</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- update modal -->
+        <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-altprimary">
+                        <h1 class="modal-title fs-5 text-uppercase bi-person-add fw-bold" id="exampleModalLabel"> Update Information</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <form method="post">
+                        <div class="modal-body">
+                            <p class="text-muted text-center bi-exclamation-triangle"> Default username and password will be TIN</p>
+
+                            <!-- post current tin -->
+                            <div class="input-group mb-4">
+                                <label class="input-group-text bi-unity" for="inputGroupSelect01">&nbsp;Type</label>
+
+                                <?php
+                                    # fetching current business tin from database
+                                    $tin = 'SELECT * FROM `business` ORDER BY `Date` DESC';
+                                    $business_FetchStatement = $pdo->prepare($tin);
+                                    $business_FetchStatement->execute();
+                                    // $business_listTin = $business_FetchStatement->fetch();
+                                ?>
+                                    <select class="form-select" name="old_btin" id="inputGroupSelect01" required>
+                                    <option>Re-select TIN</option>
+                                    <?php while ($business_listTin = $business_FetchStatement->fetch()) { ?>
+                                    <option value="<?php echo $business_listTin->business_tin ?>"><?php echo $business_listTin->business_tin ?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+
+                            <!-- post new name -->
+                            <div class="mb-4 input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-house-fill"></i>
+                                </span>
+                                <input type="text" name="nbusiness_name" class="form-control" placeholder="New Business Name" required>
+
+                                <!-- tooltips -->
+                                <span class="input-group-text">
+                                    <span class="tt" data-bs-placement="bottom" title="Re-new business name">
+                                        <i class="bi bi-info"></i>
+                                    </span>
+                                </span>
+                            </div>
+
+                            <!-- post new business_type -->
+                            <div class="input-group mb-4">
+                                <label class="input-group-text bi-unity" for="inputGroupSelect01">&nbsp;Type</label>
+                                <select class="form-select" name="nbusiness_type" id="inputGroupSelect01" required>
+                                    <option selected>Choose ...</option>
+                                    <option value="gas">Gas station</option>
+                                    <option value="others">Other</option>
+                                </select>
+                            </div>
+
+                            <!-- new business tin -->
+                            <div class="mb-4 input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-123"></i>
+                                </span>
+                                <input type="text" name="nbusiness_tin" id="name" class="form-control" placeholder="New Business TIN" required>
+
+                                <!-- tooltips -->
+                                <span class="input-group-text">
+                                    <span class="tt" data-bs-placement="bottom" title="Re-new your Tax Identification Number">
+                                        <i class="bi bi-info"></i>
+                                    </span>
+                                </span>
+                            </div>
+
+                            <p class="lead text-altprimary fw-bold bi-globe text-uppercase text-center"> Location</p>
+
+                            <!-- update location -->
+                            <div class="mb-4 input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-globe"></i>
+                                </span>
+                                <input type="text" name="nbusiness_district" class="form-control" placeholder="Re-new District" required>
+                                <input type="text" name="nbusiness_sector" class="form-control" placeholder="Re-new Sector" required>
+
+                                <!-- tooltips -->
+                                <span class="input-group-text">
+                                    <span class="tt" data-bs-placement="bottom" title="Update current working location">
+                                        <i class="bi bi-info"></i>
+                                    </span>
+                                </span>
+                            </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary bi-x-lg" data-bs-dismiss="modal"> Cancel</button>
+                            <button type="submit" name="updatebusiness" class="btn btn-altprimary float-end bi-send-check"> Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- delete modal -->
+        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Delete Modal</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="mb-3">
+                                <label for="recipient-name" class="col-form-label">Recipient:</label>
+                                <input type="text" class="form-control" id="recipient-name">
+                            </div>
+                            <div class="mb-3">
+                                <label for="message-text" class="col-form-label">Message:</label>
+                                <textarea class="form-control" id="message-text"></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary">Send message</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+    <script>
+        const tooltips = document.querySelectorAll('.tt')
+        tooltips.forEach(t => {
+            new bootstrap.Tooltip(t)
+        })
+    </script>
+</body>
+
+</html>

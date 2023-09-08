@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin | Business</title>
+
+    <!-- Icon Header -->
+    <link rel="shortcut icon" type="image/png" href="../public/img/card_Header.png">
+
+    <!-- Core CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <link rel="stylesheet" href="../node_modules/css/main.min.css">
+
+    <!-- Icons CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+</head>
+<style>
+    section {
+        padding: 50px 0px;
+    }
+    
+    .just {
+        text-align: justify;
+    }
+</style>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+        <div class="container-xxl">
+            <a href="#dashboard" class="navbar-brand">
+                <span class="text-altlight fw-medium ps-4 display-6">Tap & Pay</span>
+            </a>
+            <!-- Toggle button for mobile nav -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main-nav" aria-controls="main-nav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- navbar links -->
+            <div class="collapse navbar-collapse justify-content-end align-center ps-4" id="main-nav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a href="index.php" class="nav-link">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="client.php" class="nav-link">Clients</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="agent.php" class="nav-link">Agents</a>
+                    </li>
+                    <li class="nav-item d-md-none">
+                        <a href="#notify" class="nav-link">Notification</a>
+                    </li>
+                    <!-- <li class="nav-item ms-2 d-none d-md-inline"> -->
+                    <li class="nav-item ms-2 d-md-inline">
+                        <a href="logout.php" class="btn btn-light">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Business Profile Tables -->
+    <section id="dashboard bg-light">
+        <div class="container-md">
+
+            <!-- row for admin profile -->
+            <div class="row">
+
+                <!-- Displaying user profile -->
+                <div class="col">
+                    <h2 class="float-start">
+                        <!-- browsing profile picture or else user svg used -->
+                        <?php if($adminResults->admin_profile): ?>
+                        <img src="../public/profile/<?php echo $adminResults->admin_profile ?>" alt="Profile" class="img-fluid rounded-1" style="width: 40px;">
+                        <?php else: ?>
+                        <img src="../public/img/user-profile.svg" alt="eBook" class="rounded-5 img-thumbnail p-5 border-2 border-dark">
+                        <?php endif ?>
+                        <span class="text-altprimary fw-bold">
+                            <?php echo $adminResults->admin_name ?>
+                        </span>
+                    </h2>
+                </div>
+
+                <!-- button for registering and withdraw business balance -->
+                <div class="col">
+                    <div class="input-group justify-content-end">
+                        <button class="btn btn-outline-gold text-dark bi-person-add" data-bs-toggle="modal" data-bs-target="#registerModal" data-bs-whatever="@register"><span class="d-lg-inline-block d-none">&nbsp;Register</span></button>
+                        <button class="btn btn-gold bi-box-arrow-down" title="Register" data-bs-toggle="modal" data-bs-target="#withdrawModal" data-bs-whatever="@withdraw"><span class="d-lg-inline-block d-none" title="Withdraw">&nbsp;Withdraw</span></button>
+                    </div>
+                </div>
+
+            </div>
+            <p class="text-muted">Review business current performance.</p>
+
+            <!-- row for business table and list for small media -->
+            <div class="row my-0 g-3 justify-content-around align-items-center">
+                <div class="col-lg-12 col-lg-6">
+                    <!-- for large media -->
+                    <div class="d-lg-block d-none text-capitalize">
+                        <table class="table table-hover">
+                            <caption class="text-center fw-light">List of Registered businesses</caption>
+                            <thead class="table-dark">
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col"><i class="bi bi-person-circle"></i></th>
+                                    <th scope="col">Created_at</th>
+                                    <th scope="col">Full Name</th>
+                                    <th scope="col">TIN</th>
+                                    <th scope="col">Type</th>
+                                    <th scope="col">Pin</th>
+                                    <th scope="col">Balance</th>
+                                    <th scope="col">Update</th>
+                                    <th scope="col">Delete</th>
+                                    <th scope="col">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php $no = 1; foreach($business_Result as $business) { ?>
+                                <tr>
+                                    <th scope="row">
+                                        <?php echo $no ?>
+                                    </th>
+                                    <td><img src="../public/profile/<?php echo $business->photo ?>" alt="Profile" class="img-fluid rounded-1" style="width: 30px;"></td>
+                                    <td>
+                                        <?php echo date('M d, Y', strtotime($business->Date)) ?>
+                                    </td>
+                                    <?php 
+                                    if ($business->status != "Active") {
+                                        echo "<td class='text-uppercase text-danger'>" . $business->business_name . "</td>";
+                                    } else {
+                                        echo "<td class='text-uppercase'>" . $business->business_name . "</td>";
+                                    }
+                                ?>
+                                    <td>
+                                        <?php echo $business->business_tin ?>
+                                    </td>
+                                    <td>
+                                        <?php echo $business->business_type ?>
+                                    </td>
+                                    <td>
+                                        <?php echo $business->business_pin ?>
+                                    </td>
+                                    <td class="text-end">
+                                        <?php echo number_format($business->balance) ?>
+                                    </td>
+                                    <td class="text-center"><a href="#" class="btn btn-sm btn-altprimary" data-bs-toggle="modal" data-bs-target="#updateModal" data-bs-whatever="@update"><i class="bi bi-pencil-square"></i> Update</a></td>
+                                    <td class="text-center"><a href="#" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" data-bs-whatever="@delete"><i class="bi bi-trash3"></i> Delete</a></td>
+                                    <?php 
+                                    if ($business->status == "Active") {
+                                        echo "<td class='fw-light text-altlight bg-success text-center'><small>" . $business->status . "</small></td>"; 
+                                    } else {
+                                        echo "<td class='fw-light text-altlight bg-danger text-center'><small>" . $business->status . "</small></td>";
+                                    }
+                                ?>
+                                </tr>
+                                <?php $no++; } ?>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- For small media -->
+                    <div class="list-group d-lg-none">
+                        <?php foreach ($business_Result as $busy_count => $business){ ?>
+                        <?php 
+                            # To list few of agents. 
+                                #if ($busy_count != 0) {
+                                #    continue;
+                                #}
+                                #else {
+                        ?>
+                        <div class="list-group-item py-3">
+                            <h5 class="mb-1 text-uppercase">
+                                <?php if ($business->business_type == "gas") { ?>
+                                <i class="bi-fuel-pump text-dark-emphasis"></i>
+                                <?php } else { ?>
+                                <i class="bi-shop text-dark-emphasis"></i>
+                                <?php } ?> &nbsp;
+                                <?php 
+                                    if ($business->status == "Active") {
+                                        echo "<span class='text-success'>". $business->business_name . "</span>";
+                                ?>
+                                <span class="badge fw-light bg-success float-end"><small><?php echo "$business->status" ?></small></span>
+                                <?php 
+                                    } else {
+                                        echo "<span class='text-danger'>". $business->business_name . "</span>";
+                                ?>
+                                <span class="badge fw-light bg-danger float-end"><small><?php echo "$business->status" ?></small></span>
+                                <?php } ?>
+                            </h5>
+
+                            <!-- Fetch Business Location -->
+                            <p class="mb-1 fw-medium">Location:
+                                <span class="fw-light float-end">
+                                <?php
+                                    # Fetching business location info ...
+
+                                    $business_tin = $business->business_tin;
+
+                                    $buslocation_FetchQuery = 'SELECT * FROM `business_location` WHERE `business_tin` = :btin';
+                                    $buslocation_FetchStatement = $pdo->prepare($buslocation_FetchQuery);
+                                    $buslocation_FetchStatement->execute([
+                                                'btin'  =>  $business_tin
+                                            ]);
+                                    $buslocation_Result = $buslocation_FetchStatement->fetch(); 
+
+                                    echo $buslocation_Result->district . " District - ";
+                                    echo $buslocation_Result->sector . " Sector";
+                                ?>
+                                </span>
+                            </p>
+
+                            <!-- Fetch Tin -->
+                            <p class="mb-1 fw-medium">TIN:
+                                <span class="fw-light float-end">
+                                    <?php echo $business->business_tin ?>
+                                </span>
+                            </p>
+
+                            <!-- Fetch Pin -->
+                            <p class="mb-1 fw-medium">Pin:
+                                <span class="fw-light float-end">
+                                    <?php echo $business->business_pin ?>
+                                </span>
+                            </p>
+
+                            <!-- Fetch Balance -->
+                            <p class="mb-1 fw-medium">Balance:
+                                <span class="fw-medium float-end">
+                                    <?php echo number_format($business->balance) ?> Rwf
+                                </span>
+                            </p>
+
+                            <!-- update and delete modal triggers -->
+                            <small class="fw-light fst-italic">
+                                Registered on <?php echo date('M d, Y', strtotime($business->Date)) ?>
+                                <span class="btn-group-sm float-end">
+                                    <button class="btn btn-altdash bi-pencil-square" title="Update" data-bs-toggle="modal" data-bs-target="#updateModal" data-bs-whatever="@update"><span class="d-md-inline-block d-none">&nbsp;Update</span></button>
+                                    <button class="btn btn-danger bi-trash3" title="Delete" data-bs-toggle="modal" data-bs-target="#deleteModal" data-bs-whatever="@delete"><span class="d-md-inline-block d-none">&nbsp;Delete</span></button>                                    
+                                </span>
+                            </small>
+                        </div>
+                        <?php # } ?>
+                        <?php } ?>
+                    </div>
+                    <a href="business.php/#" class="btn btn-gold float-end mt-3 bi-download" title="View More Details"> Get List</a>
+
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- get updates / modal trigger -->
+    <section class="bg-light">
+        <div class="container">
+            <div class="text-center">
+                <!-- <h2>Stay in the Loop</h2> -->
+                <p class="lead">Copyrights &copy; 2023</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal Lists -->
+    <span>
+        <!-- register modal -->
+        <div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-gold">
+                        <h1 class="modal-title fs-5 text-uppercase bi-person-add fw-bold" id="exampleModalLabel"> Register business</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <label for="email" class="form-label">Email address:</label>
+                            <div class="mb-4 input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-envelope-fill"></i>
+                                </span>
+    <input type="text" name="admin-name" id="email" class="form-control" placeholder="<?php echo $adminResults->admin_name ?>">
+
+    <!-- tooltips -->
+    <span class="input-group-text">
+                                    <span class="tt" data-bs-placement="bottom" title="Re-new your email address.">
+                                        <i class="bi bi-info"></i>
+                                    </span>
+    </span>
+    </div>
+
+    <label for="name" class="form-label">Username:</label>
+    <div class="mb-4 input-group">
+        <span class="input-group-text">
+                                    <i class="bi bi-person-fill"></i>
+                                </span>
+        <input type="text" name="admin-username" id="name" class="form-control" placeholder="<?php  echo $adminResults->admin_username ?>" required>
+
+        <!-- tooltips -->
+        <span class="input-group-text">
+                                    <span class="tt" data-bs-placement="bottom" title="Re-new your name!">
+                                        <i class="bi bi-info"></i>
+                                    </span>
+        </span>
+    </div>
+
+    <label for="name" class="form-label">Current Password:</label>
+    <div class="mb-4 input-group">
+        <span class="input-group-text">
+                                    <i class="bi bi-key-fill"></i>
+                                </span>
+        <input type="password" name="old-password" id="opassword" class="form-control" placeholder="old-password" value="<?php echo $adminResults->admin_password ?>" required>
+
+        <!-- tooltips -->
+        <span class="input-group-text">
+                                    <span class="tt" data-bs-placement="bottom" title="How should we call you?">
+                                        <i class="bi bi-info"></i>
+                                    </span>
+        </span>
+    </div>
+
+    <label for="name" class="form-label">Set Password:</label>
+    <div class="mb-4 input-group">
+        <span class="input-group-text">
+                                    <i class="bi bi-key-fill"></i>
+                                </span>
+        <input type="password" name="new-password" id="opassword" class="form-control" placeholder="New" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
+            required>
+
+
+        <input type="password" name="confirm-password" id="npassword" class="form-control" placeholder="Confirm" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
+            required>
+        <!-- tooltips -->
+        <span class="input-group-text">
+                                <span class="tt" data-bs-placement="bottom" title="Make sure they match!">
+                                <i class="bi bi-info"></i>
+                                </span>
+        </span>
+    </div>
+
+    <div class="mb-4 text-center">
+        <button type="submit" name="editinfo" class="btn btn-gold float-end">Submit</button>
+    </div>
+
+    <div class="input-group mb-3">
+        <label class="input-group-text" for="inputGroupFile01">Upload</label>
+        <input type="file" name="" class="form-control" id="inputGroupFile01">
+    </div>
+    </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Send message</button>
+    </div>
+    </div>
+    </div>
+    </div>
+
+    <!-- withdraw modal -->
+    <div class="modal fade" id="withdrawModal" tabindex="-1" aria-labelledby="withdrawModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">New message</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="mb-3">
+                            <label for="recipient-name" class="col-form-label">Recipient:</label>
+                            <input type="text" class="form-control" id="recipient-name">
+                        </div>
+                        <div class="mb-3">
+                            <label for="message-text" class="col-form-label">Message:</label>
+                            <textarea class="form-control" id="message-text"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Send message</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- update modal -->
+    <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Third Modal</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="mb-3">
+                            <label for="recipient-name" class="col-form-label">Recipient:</label>
+                            <input type="text" class="form-control" id="recipient-name">
+                        </div>
+                        <div class="mb-3">
+                            <label for="message-text" class="col-form-label">Message:</label>
+                            <textarea class="form-control" id="message-text"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Send message</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- delete modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Delete Modal</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="mb-3">
+                            <label for="recipient-name" class="col-form-label">Recipient:</label>
+                            <input type="text" class="form-control" id="recipient-name">
+                        </div>
+                        <div class="mb-3">
+                            <label for="message-text" class="col-form-label">Message:</label>
+                            <textarea class="form-control" id="message-text"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Send message</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </span>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+    <script>
+        const tooltips = document.querySelectorAll('.tt')
+        tooltips.forEach(t => {
+            new bootstrap.Tooltip(t)
+        })
+    </script>
+</body>
+
+</html>

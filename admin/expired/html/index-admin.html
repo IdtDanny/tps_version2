@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin | Dashboard</title>
+
+    <!-- Icon Header -->
+    <link rel="shortcut icon" type="image/png" href="../public/img/card_Header.png">
+
+    <!-- Core CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <link rel="stylesheet" href="../node_modules/css/main.min.css">
+
+    <!-- Icons CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+</head>
+<style>
+    section {
+        padding: 50px 0px;
+    }
+    
+    .just {
+        text-align: justify;
+    }
+</style>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+        <div class="container-xxl">
+            <a href="#intro" class="navbar-brand">
+                <span class="text-altlight fw-medium ps-4 display-6">Tap & Pay</span>
+            </a>
+            <!-- Toggle button for mobile nav -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main-nav" aria-controls="main-nav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- navbar links -->
+            <div class="collapse navbar-collapse justify-content-end align-center ps-4" id="main-nav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a href="#edit" class="nav-link">Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#client" class="nav-link">Clients</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#business" class="nav-link">Business</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#agent" class="nav-link">Agents</a>
+                    </li>
+                    <li class="nav-item d-md-none">
+                        <a href="#notify" class="nav-link">Notification</a>
+                    </li>
+                    <!-- <li class="nav-item ms-2 d-none d-md-inline"> -->
+                    <li class="nav-item ms-2 d-md-inline">
+                        <a href="#logout" class="btn btn-light">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Admin Profile -->
+    <section id="profile bg-light">
+        <div class="container-md">
+            <div class="text-center">
+                <h2>Welcome ...</h2>
+                <p class="lead text-muted">A quick glance at your profile</p>
+            </div>
+
+            <div class="row my-0 g-5 justify-content-around align-items-center">
+                <div class="col-6 col-lg-4">
+                    <img src="../public/img/user-profile.svg" alt="eBook" class="rounded-5 img-thumbnail p-5 border-2 border-dark">
+                </div>
+
+                <!-- accordion -->
+                <div class="col-lg-6">
+                    <div class="accordion accordion-flush" id="chapters">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading1">
+                                <button class="accordion-button text-light bi-person-fill-gear bg-dark" type="button" data-bs-toggle="collapse" data-bs-target="#chapter-1" aria-expanded="true" aria-controls="chapter-1">&nbsp;Personal Profile</button>
+                            </h2>
+                            <div id="chapter-1" class="accordion-collapse collapse show" aria-labelledby="heading1" data-bs-parent="#chapters">
+                                <div class="accordion-body">
+                                    <p class="text-muted text-start fst-italic">Review your profile and login credentials <span class="badge bg-gold float-end"><i class="bi bi-person-fill"></i></span></p>
+                                    <p>Name: </p>
+                                    <p>Email: </p>
+                                    <p>Balance: </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading2">
+                                <button class="accordion-button text-dark bi-building-fill collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#chapter-2" aria-expanded="false" aria-controls="chapter-2">&nbsp;Business Info</button>
+                            </h2>
+                            <div id="chapter-2" class="accordion-collapse collapse collapse" aria-labelledby="heading2" data-bs-parent="#chapters">
+                                <div class="accordion-body">
+                                    <p class="text-muted">Information related to registered business and their current performance.</p>
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item">An item</li>
+                                        <li class="list-group-item">A second item</li>
+                                        <li class="list-group-item">A third item</li>
+                                        <li class="list-group-item">A fourth item</li>
+                                        <li class="list-group-item">And a fifth one</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading3">
+                                <button class="accordion-button collapsed bi-journal-bookmark-fill" type="button" data-bs-toggle="collapse" data-bs-target="#chapter-3" aria-expanded="false" aria-controls="chapter-3">&nbsp;Agents Info</button>
+                            </h2>
+                            <div id="chapter-3" class="accordion-collapse collapse collapse" aria-labelledby="heading3" data-bs-parent="#chapters">
+                                <div class="accordion-body">
+                                    <p class="text-muted">Info related to registered business and their current performance</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading4 client">
+                                <button class="accordion-button collapsed bi-credit-card-fill" type="button" data-bs-toggle="collapse" data-bs-target="#chapter-4" aria-expanded="false" aria-controls="chapter-4">&nbsp;Card Info</button>
+                            </h2>
+                            <div id="chapter-4" class="accordion-collapse collapse collapse" aria-labelledby="heading3" data-bs-parent="#chapters">
+                                <div class="accordion-body">
+                                    <p class="text-muted">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Vero, deleniti eius cumque quae esse, aliquam rerum sit provident non necessitatibus ducimus neque asperiores tempora quia a mollitia dolorem. Neque, eligendi?</p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Business review -->
+    <section id="business" class="bg-light">
+        <div class="container-lg">
+            <div class="text-center text-success">
+                <h2><i class="bi bi-stars"></i> Business Reviews</h2>
+                <p class="lead text-muted">Different business and their current progress</p>
+            </div>
+
+            <div class="row justify-content-center my-5">
+                <div class="col-lg-8">
+                    <div class="list-group">
+                        <div class="list-group-item py-3">
+                            <h5 class="bi-ev-station-fill mb-1">&nbsp;ENGEN
+                                <?php if(): ?><span class="badge fw-light bg-success float-end"><small>Working <?php echo ?></small></span>
+                                <?php endif ?>
+                            </h5>
+                            <p class="mb-1">Location:
+                                <?php echo ?>
+                            </p>
+                            <p class="mb-1">System Usage Employee:
+                                <?php echo ?>
+                            </p>
+                            <small>Registered by <?php echo ?></small>
+                        </div>
+
+                        <div class="list-group-item py-3">
+                            <h5 class="bi-ev-station-fill mb-1">&nbsp;KOBIL <span class="badge fw-light bg-success float-end"><small>Working <?php echo ?></small></span></h5>
+                            <p class="mb-1">Location:
+                                <?php echo ?>
+                            </p>
+                            <p class="mb-1">System Usage Employee:
+                                <?php echo ?>
+                            </p>
+                            <small>Registered by <?php echo ?></small>
+                        </div>
+
+                        <div class="list-group-item py-3">
+                            <h5 class="bi-ev-station-fill mb-1">&nbsp;RUBIS <span class="badge fw-light bg-success float-end"><small>Working <?php echo ?></small></span></h5>
+                            <p class="mb-1">Location:
+                                <?php echo ?>
+                            </p>
+                            <p class="mb-1">System Usage Employee:
+                                <?php echo ?>
+                            </p>
+                            <small>Registered by <?php echo ?></small>
+                            <a href="#" class="btn btn-outline-altorange float-end mt-3">View More</a>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- client info -->
+    <section id="agent">
+        <div class="container-lg">
+            <div class="text-center">
+                <h2>Your current agents</h2>
+                <p class="lead text-muted">Interact and reach out to agents.</p>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-lg-6 col-lg-4">
+                    <div class="card border-dark border-2 rounded-3">
+                        <div class="card-header text-center text-dark">Most Recent</div>
+                        <div class="card-body">
+
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between align-items-start">
+                                    <div class="ms-2 me-auto">
+                                        <div class="fw-bold">Agent 1</div>
+                                        Daily activity
+                                    </div>
+                                    <span class="badge bg-altprimary rounded">14</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-start">
+                                    <div class="ms-2 me-auto">
+                                        <div class="fw-bold">Agent 2</div>
+                                        Daily activity
+                                    </div>
+                                    <span class="badge bg-altprimary rounded">14</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-start">
+                                    <div class="ms-2 me-auto">
+                                        <div class="fw-bold">Agent 3</div>
+                                        Daily activity
+                                    </div>
+                                    <span class="badge bg-altprimary rounded">14</span>
+                                </li>
+                            </ul>
+
+                            <a href="#" class="btn btn-altlight float-end mt-3">View More</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Profile edit form -->
+    <section id="edit" class="bg-light">
+        <div class="container-lg">
+            <div class="text-center">
+                <h2 class="fw-medium text-gold">Modify your Profile</h2>
+                <p class="lead">Review and modify whatever you wish!</p>
+            </div>
+
+            <div class="row justify-content-center my-5">
+                <div class="col-lg-6">
+                    <form action="#" method="post">
+                        <label for="email" class="form-label">Email address:</label>
+                        <div class="mb-4 input-group">
+                            <span class="input-group-text">
+                                <i class="bi bi-envelope-fill"></i>
+                            </span>
+                            <input type="email" name="" id="email" class="form-control" placeholder="<?php echo ?>">
+
+                            <!-- tooltips -->
+                            <span class="input-group-text">
+                                <span class="tt" data-bs-placement="bottom" title="Re-new your email address.">
+                                <i class="bi bi-info"></i>
+                                </span>
+                            </span>
+                        </div>
+
+                        <label for="name" class="form-label">Username:</label>
+                        <div class="mb-4 input-group">
+                            <span class="input-group-text">
+                                <i class="bi bi-person-fill"></i>
+                            </span>
+                            <input type="text" name="" id="name" class="form-control" placeholder="<?php  echo ?>" required>
+
+                            <!-- tooltips -->
+                            <span class="input-group-text">
+                                <span class="tt" data-bs-placement="bottom" title="Re-new your name!">
+                                <i class="bi bi-info"></i>
+                                </span>
+                            </span>
+                        </div>
+
+                        <label for="name" class="form-label">Current Password:</label>
+                        <div class="mb-4 input-group">
+                            <span class="input-group-text">
+                                <i class="bi bi-key-fill"></i>
+                            </span>
+                            <input type="password" name="" id="opassword" class="form-control" placeholder="old-password" value="<?php echo ?>" readonly>
+
+                            <!-- tooltips -->
+                            <span class="input-group-text">
+                                <span class="tt" data-bs-placement="bottom" title="How should we call you?">
+                                <i class="bi bi-info"></i>
+                                </span>
+                            </span>
+                        </div>
+
+                        <label for="name" class="form-label">Set Password:</label>
+                        <div class="mb-4 input-group">
+                            <span class="input-group-text">
+                                <i class="bi bi-key-fill"></i>
+                            </span>
+                            <input type="password" name="" id="opassword" class="form-control" placeholder="New" required>
+
+                            <input type="password" name="" id="npassword" class="form-control" placeholder="Confirm" required>
+                            <!-- tooltips -->
+                            <span class="input-group-text">
+                                <span class="tt" data-bs-placement="bottom" title="Make sure they match!">
+                                <i class="bi bi-info"></i>
+                                </span>
+                            </span>
+                        </div>
+
+                        <div class="mb-4 text-center">
+                            <button type="submit" name="" class="btn btn-gold float-end">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- get updates / modal trigger -->
+    <section class="bg-altlight">
+        <div class="container">
+            <div class="text-center">
+                <!-- <h2>Stay in the Loop</h2> -->
+                <p class="lead">Copyrights &copy; 2023</p>
+            </div>
+        </div>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+    <script>
+        const tooltips = document.querySelectorAll('.tt')
+        tooltips.forEach(t => {
+            new bootstrap.Tooltip(t)
+        })
+    </script>
+</body>
+
+</html>

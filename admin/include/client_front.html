@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin | Clients</title>
+
+    <!-- Icon Header -->
+    <link rel="shortcut icon" type="image/png" href="../public/img/card_Header.png">
+
+    <!-- Core CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <link rel="stylesheet" href="../node_modules/css/main.min.css">
+
+    <!-- Icons CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+</head>
+<style>
+    section {
+        padding: 50px 0px;
+    }
+    
+    .just {
+        text-align: justify;
+    }
+</style>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+        <div class="container-xxl">
+            <a href="#dashboard" class="navbar-brand">
+                <span class="text-altlight fw-medium ps-4 display-6">Tap & Pay</span>
+            </a>
+            <!-- Toggle button for mobile nav -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main-nav" aria-controls="main-nav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- navbar links -->
+            <div class="collapse navbar-collapse justify-content-end align-center ps-4" id="main-nav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a href="index.php" class="nav-link">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="agent.php" class="nav-link">Agents</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="business.php" class="nav-link">Business</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="client.php" class="nav-link d-md-block d-none bi-arrow-clockwise"></a>
+                    </li>
+                    <li class="nav-item d-md-none">
+                        <a href="#notify" class="nav-link">Notification</a>
+                    </li>
+                    <!-- <li class="nav-item ms-2 d-none d-md-inline"> -->
+                    <li class="nav-item ms-2 d-md-inline">
+                        <a href="logout.php" class="btn btn-light">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Business Profile Tables -->
+    <section id="dashboard bg-light">
+        <div class="container-md">
+
+            <!-- row for admin profile -->
+            <div class="row">
+
+                <!-- Displaying user profile -->
+                <div class="col">
+                    <h2 class="float-start">
+                        <!-- browsing profile picture or else user svg used -->
+                        <?php if($adminResults->admin_profile): ?>
+                        <img src="../public/profile/<?php echo $adminResults->admin_profile ?>" alt="Profile" class="img-fluid rounded-1" style="width: 40px;">
+                        <?php else: ?>
+                        <img src="../public/img/user-profile.svg" alt="eBook" class="rounded-5 img-thumbnail p-5 border-2 border-dark">
+                        <?php endif ?>
+                        <span class="text-altprimary fw-bold text-uppercase">
+                            <?php # $adminResults->admin_name ?> Client <span class="d-md-inline-block d-none">list</span>
+                        </span>
+                    </h2>
+                </div>
+
+                <!-- button for registering and withdraw business balance -->
+                <div class="col">
+                </div>
+
+            </div>
+            <p class="text-muted text-capitalize">Review on registered cards for client.</p>
+
+            <!-- document download button -->
+            <form method="post" class="d-md-none d-flex">
+                <a href="agent.php" class="btn btn-outline-gold text-dark d-lg-none d-md-none bi-arrow-clockwise justify-content-end"></a>
+                <span class="input-group justify-content-end">
+                    <a href="export/export_client_excel.php" type="submit" name="export_excel" class="btn btn-outline-success bi-filetype-xlsx jus" title="View More Details"> <span class="d-md-inline-block d-none">Excel</span></a>
+                <a href="export/export_client_pdf.php" type="submit" name="export_pdf" class="btn btn-altorange bi-file-pdf bi-download" title="View More Details"> <span class="d-md-inline-block d-none">Pdf</span></a>
+                </span>
+            </form>
+
+            <!-- row for business table and list for small media -->
+            <div class="row my-0 g-3 justify-content-around align-items-center">
+                <div class="col-lg-12 col-lg-6">
+
+                    <!-- Error messages -->
+                    <?php if($client_errorMessage || $client_deleteErrorMessage || $update_errorMessage) { ?>
+                    <div class="alert alert-warning alert-dismissible fade show alert-danger" role="alert">
+                        <strong class="bi bi-exclamation-triangle">
+                            <?php 
+                                echo $client_errorMessage; 
+                                echo $client_deleteErrorMessage; 
+                                echo $update_errorMessage; 
+                            ?>
+                        </strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+
+                    <?php } ?>
+
+                    <!-- success messages -->
+                    <?php if($client_successMessage || $client_deleteSuccessMessage || $update_successMessage) { ?>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <strong class="bi bi-check2-all">
+                            <?php 
+                                echo $client_successMessage; 
+                                echo $client_deleteSuccessMessage; 
+                                echo $update_successMessage 
+                            ?>
+                        </strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    <?php } ?>
+
+                    <!-- for large media -->
+                    <div class="d-lg-block d-none text-capitalize">
+                        <table class="table table-hover">
+                            <caption class="text-center fw-light">List of Registered client</caption>
+                            <thead class="table-dark">
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col"><i class="bi bi-person-circle"></i></th>
+                                    <th scope="col">Created_at</th>
+                                    <th scope="col">Client ID</th>
+                                    <th scope="col">Full Name</th>
+                                    <th scope="col">Tel No</th>
+                                    <th scope="col">E-mail</th>
+                                    <th scope="col">Balance</th>
+                                    <th scope="col">Referral</th>
+                                    <th scope="col">Delete</th>
+                                    <th scope="col">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                <?php $no = 1; foreach($client_Result as $client) { ?>
+                                <tr>
+                                    <th scope="row">
+                                        <?php echo $no ?>
+                                    </th>
+                                    <td><i class="bi bi-person-circle"></i></td>
+                                    <td>
+                                        <?php echo date('M d, Y', strtotime($client->created_at)) ?>
+                                    </td>
+                                    <td>
+                                        <?php echo $client->client_id ?>
+                                    </td>
+                                    <?php 
+                                        if ($client->status != "active") {
+                                            echo "<td class='text-uppercase text-danger'>" . $client->client_name . "</td>";
+                                        } else {
+                                            echo "<td class='text-uppercase'>" . $client->client_name . "</td>";
+                                        }
+                                    ?>
+                                    <td>
+                                        <?php echo $client->client_tel ?>
+                                    </td>
+                                    <td class="text-lowercase">
+                                        <?php echo $client->client_mail ?>
+                                    </td>
+                                    <td class="text-end">
+                                        <?php echo number_format($client->client_balance) ?>
+                                    </td>
+                                    <td class="text-end">
+                                        <?php echo $client->referral_agent ?>
+                                    </td>
+                                    <td class="text-center"><a href="client.php?dcID=<?php echo $client->cID ?>" class="btn btn-sm btn-danger"><i class="bi bi-trash3"></i> </a></td>
+                                    <?php 
+                                    if ($client->client_balance == 0) {
+                                        echo "<td class='fw-light text-altlight bg-danger text-center'><small>sleep" . $client->status . "</small></td>";
+                                    } else {
+                                        echo "<td class='fw-light text-altlight bg-success text-center'><small>active" . $client->status . "</small></td>"; 
+                                    }
+                                ?>
+                                </tr>
+                                <?php $no++; } ?>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- For small media -->
+                    <div class="list-group d-lg-none">
+                        <?php foreach ($client_Result as $agt_count => $client){ ?>
+                        <?php 
+                            # To list few of clients. 
+                                #if ($client_count != 0) {
+                                #    continue;
+                                #}
+                                #else {
+                        ?>
+                        <div class="list-group-item py-3">
+                            <h5 class="mb-1 text-uppercase">
+                                <i class="bi bi-person-check bi-shop text-dark-emphasis"></i> &nbsp;
+                                <?php 
+                                    if ($client->client_balance > 0) {
+                                        echo "<span class='text-success'>". $client->client_name . "</span>";
+                                ?>
+                                <span class="badge fw-light bg-success float-end"><small>active <?php echo "$client->status" ?></small></span>
+                                <?php 
+                                    } else {
+                                        echo "<span class='text-danger'>". $client->client_name . "</span>";
+                                ?>
+                                <span class="badge fw-light bg-danger float-end"><small>sleep <?php echo "$client->status" ?></small></span>
+                                <?php } ?>
+                            </h5>
+
+                            <!-- Fetch Business Location -->
+                            <p class="mb-1 fw-medium">Client ID:
+                                <span class="fw-light float-end">
+                                <?php
+
+                                    echo $client->client_id;
+
+                                    # Fetching business location info ...
+
+                                    # $cID = $client->cID;
+
+                                    # $client_location_FetchQuery = 'SELECT * FROM `client_location` WHERE `cID` = :cID';
+                                    # $client_location_FetchStatement = $pdo->prepare($client_location_FetchQuery);
+                                    # $client_location_FetchStatement->execute([
+                                    #             'cID'  =>  $cID
+                                    #         ]);
+                                    # $client_location_Result = $client_location_FetchStatement->fetch(); 
+
+                                    # echo $buslocation_Result->district . " District - ";
+                                    # echo $client_location_Result->sector . " Sector";
+                                ?>
+                                </span>
+                            </p>
+
+                            <!-- Fetch phone number -->
+                            <p class="mb-1 fw-medium">Tel:
+                                <span class="fw-light float-end">
+                                    <?php echo $client->client_tel ?>
+                                </span>
+                            </p>
+
+                            <!-- Fetch Balance -->
+                            <p class="mb-1 fw-medium">Balance:
+                                <span class="fw-medium float-end">
+                                    <?php echo number_format($client->client_balance) ?> Rwf
+                                </span>
+                            </p>
+
+                            <!-- update and delete modal triggers -->
+                            <small class="fw-light fst-italic">
+                                Registered on <?php echo date('M d, Y', strtotime($client->created_at)) ?>
+                                <span class="btn-group-sm float-end">
+                                    <button class="btn btn-altdash bi-pencil-square" title="Update" data-bs-toggle="modal" data-bs-target="#updateModal" data-bs-whatever="@update"><span class="d-md-inline-block d-none">&nbsp;Update</span></button>
+                                    <a href="business.php?dbID=<?php echo $client->cID ?>" class="btn btn-danger bi-trash3" title="Delete"><span class="d-md-inline-block d-none">&nbsp;Delete</span></a>                                    
+                                    <!-- <button class="btn btn-danger bi-trash3" title="Delete" data-bs-toggle="modal" data-bs-target="#deleteModal" data-bs-whatever="@delete"><span class="d-md-inline-block d-none">&nbsp;Delete</span></button>                                     -->
+                                </span>
+                            </small>
+                        </div>
+                        <?php # } ?>
+                        <?php } ?>
+                    </div>
+                    <form method="post" class="input-group justify-content-end d-md-flex d-none">
+                        <a href="export/export_client_excel.php" type="submit" class="btn btn-outline-success float-end mt-3 bi-filetype-xlsx" title="View More Details"> <span class="d-md-inline-block d-none">Excel</span></a>
+                        <a href="export/export_client_pdf.php" type="submit" class="btn btn-altorange float-end mt-3 bi-file-pdf bi-download" title="View More Details"> <span class="d-md-inline-block d-none">Pdf</span></a>
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- get updates / modal trigger -->
+    <section class="bg-light fixed-bottom">
+        <div class="container">
+            <div class="text-center">
+                <!-- <h2>Stay in the Loop</h2> -->
+                <p class="lead">Copyrights &copy; 2023</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal Lists -->
+    <span>        
+    <!-- add modal -->
+    <div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-altprimary">
+                    <h1 class="modal-title fs-5 text-uppercase bi-person-add fw-bold" id="exampleModalLabel"> Add client</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <form action="" method="post" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        <p class="text-muted text-center bi-exclamation-triangle"> Default password will be like (username-pin) </p>
+
+                        <!-- post name -->
+                        <div class="mb-4 input-group">
+                            <span class="input-group-text">
+                                <i class="bi bi-house-fill"></i>
+                            </span>
+    <input type="text" name="client_name" class="form-control" placeholder="client Name">
+
+    <!-- tooltips -->
+    <span class="input-group-text">
+                                <span class="tt" data-bs-placement="bottom" title="Register client name">
+                                    <i class="bi bi-info"></i>
+                                </span>
+    </span>
+    </div>
+
+    <!-- post username -->
+    <div class="mb-4 input-group">
+        <span class="input-group-text">
+                                <i class="bi bi-person-circle"></i>
+                            </span>
+        <input type="text" name="client_uname" class="form-control" placeholder="Username">
+
+        <!-- tooltips -->
+        <span class="input-group-text">
+                                <span class="tt" data-bs-placement="bottom" title="what should be your username?">
+                                    <i class="bi bi-info"></i>
+                                </span>
+        </span>
+    </div>
+
+    <!-- post_email -->
+    <div class="mb-4 input-group">
+        <span class="input-group-text">
+                                <i class="bi bi-envelope-fill"></i>
+                            </span>
+        <input type="email" name="client_mail" id="email" class="form-control" placeholder="Email address">
+
+        <!-- tooltips -->
+        <span class="input-group-text">
+                                <span class="tt" data-bs-placement="bottom" title="Add your email address.">
+                                    <i class="bi bi-info"></i>
+                                </span>
+        </span>
+    </div>
+
+    <!-- client profile -->
+    <div class="input-group mb-3">
+        <label class="input-group-text bi-upload" for="inputGroupFile01"></label>
+        <input type="file" name="client_profile" class="form-control" id="inputGroupFile01">
+
+        <!-- tooltips -->
+        <span class="input-group-text">
+                                <span class="tt" data-bs-placement="bottom" title="Add client profile photo">
+                                    <i class="bi bi-info"></i>
+                                </span>
+        </span>
+    </div>
+
+    <p class="lead text-altprimary fw-bold bi-globe text-uppercase text-center"> Location</p>
+
+    <!-- location -->
+    <div class="mb-4 input-group">
+        <span class="input-group-text">
+                                <i class="bi bi-globe"></i>
+                            </span>
+        <input type="text" name="client_district" class="form-control" placeholder="District" required>
+        <input type="text" name="client_sector" class="form-control" placeholder="Sector" required>
+
+        <!-- tooltips -->
+        <span class="input-group-text">
+                                <span class="tt" data-bs-placement="bottom" title="Add current working location">
+                                    <i class="bi bi-info"></i>
+                                </span>
+        </span>
+    </div>
+
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary bi-x-lg" data-bs-dismiss="modal"> Cancel</button>
+        <button type="submit" name="registerclient" class="btn btn-altprimary float-end bi-send-check"> Submit</button>
+    </div>
+    </form>
+    </div>
+    </div>
+    </div>
+
+    <!-- withdraw modal -->
+    <div class="modal fade" id="withdrawModal" tabindex="-1" aria-labelledby="withdrawModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">New message</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="mb-3">
+                            <label for="recipient-name" class="col-form-label">Recipient:</label>
+                            <input type="text" class="form-control" id="recipient-name">
+                        </div>
+                        <div class="mb-3">
+                            <label for="message-text" class="col-form-label">Message:</label>
+                            <textarea class="form-control" id="message-text"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Send message</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- recharge modal -->
+    <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-altprimary">
+                    <h1 class="modal-title fs-5 text-altlight text-uppercase bi-currency-exchange fw-bold" id="exampleModalLabel"> Recharge Account</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <form method="post">
+                    <div class="modal-body">
+
+                        <!-- select user to recharge -->
+                        <div class="input-group mb-4 mt-3">
+                            <label class="input-group-text bi-person-circle" for="inputGroupSelect01">&nbsp;</label>
+
+                            <?php
+                                    # fetching current client_username from database
+                                    $uname = 'SELECT * FROM `client` ORDER BY `created_at` DESC';
+                                    $client_FetchStatement = $pdo->prepare($uname);
+                                    $client_FetchStatement->execute();
+                                    // $business_listTin = $business_FetchStatement->fetch();
+                                ?>
+                                <select class="form-select" name="client_username" id="inputGroupSelect01" required>
+                                    <option>Select username</option>
+                                    <?php while ($client_list = $client_FetchStatement->fetch()) { ?>
+                                    <option value="<?php echo $client_list->client_username ?>"><?php echo $client_list->client_username ?></option>
+                                    <?php } ?>
+                                </select>
+                        </div>
+
+                        <!-- amount to recharge -->
+                        <div class="mb-4 input-group">
+                            <span class="input-group-text">
+                                    <i class="bi bi-currency-exchange"></i>
+                            </span>
+                            <input type="text" name="ramount" class="form-control" placeholder="Amount to recharge" required>
+
+                            <!-- tooltips -->
+                            <span class="input-group-text">
+                                <span class="tt" data-bs-placement="bottom" title="How much to recharge?">
+                                    <i class="bi bi-info"></i>
+                                </span>
+                            </span>
+                        </div>
+
+                        <!-- confirm with client pin -->
+                        <div class="mb-4 input-group">
+                            <span class="input-group-text">
+                                    <i class="bi bi-123"></i>
+                                </span>
+                            <input type="text" name="cpin" id="name" class="form-control" placeholder="Confirm PIN" required>
+
+                            <!-- tooltips -->
+                            <span class="input-group-text">
+                                    <span class="tt" data-bs-placement="bottom" title="Confirm recharge with client pin">
+                                        <i class="bi bi-info"></i>
+                                    </span>
+                            </span>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary bi-x-lg" data-bs-dismiss="modal"> Cancel</button>
+                        <button type="submit" name="rechargeclient" class="btn btn-altprimary float-end bi-send-check"> Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- delete modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Delete Modal</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="mb-3">
+                            <label for="recipient-name" class="col-form-label">Recipient:</label>
+                            <input type="text" class="form-control" id="recipient-name">
+                        </div>
+                        <div class="mb-3">
+                            <label for="message-text" class="col-form-label">Message:</label>
+                            <textarea class="form-control" id="message-text"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Send message</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </span>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+    <script>
+        const tooltips = document.querySelectorAll('.tt')
+        tooltips.forEach(t => {
+            new bootstrap.Tooltip(t)
+        })
+    </script>
+</body>
+
+</html>
