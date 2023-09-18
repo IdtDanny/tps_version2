@@ -1,0 +1,54 @@
+<!-- Navbar -->
+<nav class="navbar navbar-expand-md navbar-dark bg-altprimary">
+    <div class="container-xxl">
+        <a href="#dashboard" class="navbar-brand">
+            <span class="text-altlight fw-medium ps-4 display-6">Tap & Pay</span>
+        </a>
+
+        <!-- browsing profile picture or else user svg used -->
+        <div class="d-md-none tt" data-bs-placement="bottom" title="<?php echo $businessResults->business_name; ?>">
+            <?php if($businessResults->photo): ?>
+            <img src="../public/profile/<?php echo $businessResults->photo ?>" alt="Profile" class="img-fluid img-thumbnail rounded-4" style="width: 45px;">
+            <?php else: ?>
+            <img src="../public/img/user-profile.svg" alt="eBook" class="img-fluid rounded-1" style="width: 40px;">
+            <?php endif ?>
+        </div>
+
+        <!-- Toggle button for mobile nav -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main-nav" aria-controls="main-nav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+        <!-- navbar links -->
+        <div class="collapse navbar-collapse justify-content-end align-center ps-4" id="main-nav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a href="index.php" class="nav-link">Profile</a>
+                </li>
+                <li class="nav-item">
+                    <a href="payment.php" class="nav-link">Payments</a>
+                </li>
+                <li class="nav-item">
+                    <a href="records.php" class="nav-link">Records</a>
+                </li>
+                <li class="nav-item">
+                    <a href="notification.php" class="nav-link">Notification</a>
+                </li>
+                <li class="d-md-inline d-none">
+                    <a href="#dashboard" class="tt" data-bs-placement="bottom" title="<?php echo $businessResults->business_name; ?>">
+                        <!-- browsing profile picture or else user svg used -->
+                        <?php if($businessResults->photo): ?>
+                        <img src="../public/profile/<?php echo $businessResults->photo ?>" alt="Profile" class="img-fluid img-thumbnail rounded-4" style="width: 42px;">
+                        <?php else: ?>
+                        <img src="../public/img/user-profile.svg" alt="eBook" class="img-fluid rounded-1" style="width: 40px;">
+                        <?php endif ?>
+                    </a>
+                </li>
+                <!-- <li class="nav-item ms-2 d-none d-md-inline"> -->
+                <li class="nav-item ms-2 d-md-inline">
+                    <a href="logout.php" class="btn btn-light">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>

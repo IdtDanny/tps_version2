@@ -15,6 +15,15 @@
     $admin_ID = $_SESSION['sessionToken']->admin_ID;
     $admin_name = $_SESSION['sessionToken']->admin_name;
 
+    #notification variables ...
+
+    $client_errorMessage = "";
+    $client_successMessage = "";
+    $client_deleteSuccessMessage = "";
+    $client_deleteErrorMessage = "";
+    $update_errorMessage = "";
+    $update_successMessage = "";
+
     # Calculating Each Number of Users, Cards, business, agents and so on...
     $sql_agent = 'SELECT * FROM agent';
     $sql_client = 'SELECT * FROM client';
@@ -80,9 +89,9 @@
     $adminResults = $adminFetchStatement->fetch();
 
     # refreshing message
-    $errorRefreshMessage = "<span class='d-md-inline-block d-none'>, Refresh to continue </span><a href='agent.php' class='float-end fw-bold text-danger'><i class='bi bi-arrow-clockwise me-3'></i></a>";
+    $errorRefreshMessage = "<span class='d-md-inline-block d-none'>, Refresh to continue </span><a href='client.php' class='float-end fw-bold text-danger'><i class='bi bi-arrow-clockwise me-3'></i></a>";
 
-    $successRefreshMessage = "<span class='d-md-inline-block d-none'>, Refresh to see the change </span><a href='agent.php' class='float-end fw-bold text-success'><i class='bi bi-arrow-clockwise me-3'></i></a>";
+    $successRefreshMessage = "<span class='d-md-inline-block d-none'>, Refresh to see the change </span><a href='client.php' class='float-end fw-bold text-success'><i class='bi bi-arrow-clockwise me-3'></i></a>";
 
     # Registering new agent
 
@@ -202,27 +211,27 @@
     }
 
     # getting agent delete response
-    if (isset($_GET['daID'])) {
-        $daID = $_GET['daID'];
-        $sql_adelete = 'DELETE FROM `agent` WHERE aID = :aid';
-        $sql_lodelete = 'DELETE FROM `agent_location` WHERE aID = :aid';
+    if (isset($_GET['dcID'])) {
+        $daID = $_GET['dcID'];
+        $sql_adelete = 'DELETE FROM `client` WHERE cID = :cid';
+        $sql_lodelete = 'DELETE FROM `client_location` WHERE cID = :cid';
 
         # PDO Prep & Exec..
-        $delete_agent = $pdo->prepare($sql_adelete);
-        $delete_agent->execute([
-            'aid'  =>  $daID
+        $delete_client = $pdo->prepare($sql_adelete);
+        $delete_client->execute([
+            'cid'  =>  $daID
         ]);
 
-        $delete_agent_location = $pdo->prepare($sql_lodelete);
-        $delete_agent_location->execute([
-            'aid'  =>  $daID
+        $delete_client_location = $pdo->prepare($sql_lodelete);
+        $delete_client_location->execute([
+            'cid'  =>  $daID
         ]);
 
         if ($sql_adelete && $sql_lodelete) {
-            $agent_deleteSuccessMessage = " Deleted Successful" . $successRefreshMessage;
+            $client_deleteSuccessMessage = " Deleted Successful" . $successRefreshMessage;
         }
         else {
-            $agent_deleteErrorMessage = " Could not delete, check agent id" . $errorRefreshMessage;
+            $client_deleteErrorMessage = " Could not delete, check agent id" . $errorRefreshMessage;
         }
 
     }
@@ -273,6 +282,28 @@
         }
         else {
             $update_errorMessage = " Unknown Pin" . $errorRefreshMessage;
+        }
+
+    }
+
+    # getting agent activation response
+
+    if (isset($_GET['AcID'])) {
+        $daID = $_GET['AcID'];
+        $sql_active = 'UPDATE `client` SET `status` =:active WHERE cID = :aid';
+
+        # PDO Prep & Exec..
+        $active_agent = $pdo->prepare($sql_active);
+        $active_agent->execute([
+            'active' => 'active',
+            'aid'    =>  $daID
+        ]);
+
+        if ($sql_active) {
+            $update_successMessage = " Activated Successful" . $successRefreshMessage;
+        }
+        else {
+            $update_errorMessage = " Could not activate, check agent id" . $errorRefreshMessage;
         }
 
     }

@@ -15,6 +15,17 @@
     $admin_ID = $_SESSION['sessionToken']->admin_ID;
     $admin_name = $_SESSION['sessionToken']->admin_name;
 
+    # notification variables ...
+
+    $busy_errorMessage = "";
+    $busy_successMessage = "";
+    $busy_deleteErrorMessage = "";
+    $busy_deleteSuccessMessage = "";
+    $update_errorMessage = "";
+    $update_successMessage = "";
+    $busy_updateErrorMessage = "";
+    $busy_updateSuccessMessage = "";
+
     # Calculating Each Number of Users, Cards, business, agents and so on...
     $sql_agent = 'SELECT * FROM agent';
     $sql_client = 'SELECT * FROM client';
@@ -181,6 +192,7 @@
     }
 
     # getting business delete response
+
     if (isset($_GET['dbID'])) {
         $dbID = $_GET['dbID'];
         $sql_bdelete = 'DELETE FROM `business` WHERE bID = :bid';
@@ -202,6 +214,28 @@
         }
         else {
             $busy_deleteErrorMessage = " Could not delete, check business id" . $errorRefreshMessage;
+        }
+
+    }
+
+    # getting business approve response
+
+    if (isset($_GET['AbID'])) {
+        $dbID = $_GET['AbID'];
+        $sql_update = 'UPDATE `business` SET `approved_by` = :approved_by WHERE `business`.`bID` = :bid';
+
+        # PDO Prep & Exec..
+        $update_Business = $pdo->prepare($sql_update);
+        $update_Business->execute([
+            'approved_by' => 'admin',
+            'bid'         =>  $dbID
+        ]);
+
+        if ($sql_update) {
+            $update_successMessage = " Approved Successful" . $successRefreshMessage;
+        }
+        else {
+            $update_errorMessage = " Could not update, check business id" . $errorRefreshMessage;
         }
 
     }
@@ -231,7 +265,7 @@
 
         if ($businessCount > 0 ) {
 
-            # Modifying Agent ...
+            # Modifying business ...
 
             $business_UpdateQuery = ' UPDATE `business`
                                 SET `business_name` = :business_NewName,
@@ -271,6 +305,193 @@
             $update_errorMessage = " Unknown Tin" . $errorRefreshMessage;
         }
 
+    }
+
+    # withdraw agent Operation...
+
+    if (isset($_POST['withdrawBusiness'])) {
+
+        $cpin = $_POST['cpin'];
+        $ramount = $_POST['ramount'];
+
+        # checking agent activation key from request made ...
+
+        $requestFetchQuery = 'SELECT * FROM `request` WHERE `activation_key` = :cpin AND `amount` = :ramount';
+        $requestFetchStatement = $pdo->prepare($requestFetchQuery);
+        $requestFetchStatement->execute([
+            'cpin'    => $cpin,
+            'ramount' => $ramount
+        ]);
+        $requestResults = $requestFetchStatement->fetch();
+
+        # once activation key confirmed ...
+
+        if ($requestFetchQuery) {
+
+            # checking if it is not confirmed ...
+
+            if ($requestResults->status == 'confirmed') {
+                $update_errorMessage = " No request made" . $errorRefreshMessage;
+            }
+
+            # otherwise proceed with operation ...
+
+            else {
+
+                # checking if 24 hours haven't passed ...
+
+                $request_date = $requestResults->request_date . ' ' . $requestResults->request_time;
+
+                $now = strtotime(date('Y-m-d h:i:s'));
+                $cdate = strtotime($request_date);
+                $day_diff = $now - $cdate;
+                $hours = floor($day_diff / 3600);
+                
+                if ($hours >= 24) {
+                    $update_errorMessage = " Request expired" . $errorRefreshMessage;
+                }
+
+                # otherwise proceed with operation ...
+
+                else {
+
+                    # getting agent info from request ...
+
+                    $user_id = $requestResults->user_id;
+                    
+                    # Checking for agent existing and his id meet with request ...
+
+                    $fetch_UserQuery='SELECT * FROM `business` WHERE `business_tin` = :business_tin';
+                    $fetch_UserStatement = $pdo->prepare($fetch_UserQuery);
+                    $fetch_UserStatement->execute([
+                        'business_tin' => $user_id
+                    ]);
+
+                    $business_Info = $fetch_UserStatement -> fetch();
+
+                    $businessCount = $fetch_UserStatement->rowCount();
+
+                    # proceed with withdraw if agent info meet with request ...
+
+                    if ($businessCount > 0 ) {
+
+                        # agent balance ...
+
+                        $business_balance = $business_Info->balance;
+
+                        # checking agent balance to withdraw ...
+
+                        if ($business_balance <= 0 || $business_balance < $ramount) {
+                            $update_errorMessage = " Not enough balance" . $errorRefreshMessage;
+                        }
+                        
+                        # with enough balance to top up ...
+
+                        else {
+
+                            # modifying admin balance ...
+
+                            $admin_balance = $adminResults->Balance;
+
+                            $admin_pin = $adminResults->admin_pin;
+
+                            $admin_balance += $ramount;
+
+                            $admin_UpdateQuery = ' UPDATE `admin`
+                                                SET `Balance` = :admin_balance
+                                                WHERE `admin_pin` = :admin_pin
+                            ';
+
+                            $admin_UpdateStatement = $pdo->prepare($admin_UpdateQuery);
+                            $admin_UpdateStatement->execute([
+                                'admin_balance'   =>  $admin_balance,
+                                'admin_pin'       =>  $admin_pin
+                            ]);
+
+                            # Modifying business ...
+
+                            $balance = $business_Info->balance;
+
+                            $balance -= $ramount;
+
+                            $business_UpdateQuery = ' UPDATE `business`
+                                                SET `balance` = :business_balance
+                                                WHERE `business_tin` = :business_tin
+                            ';
+
+                            $business_UpdateStatement = $pdo->prepare($business_UpdateQuery);
+                            $business_UpdateStatement->execute([
+                                'business_balance' =>  $balance,
+                                'business_tin'     =>  $user_id
+                            ]);
+
+                            if ($business_UpdateQuery && $admin_UpdateQuery) {
+
+                                $sender_id = 'admin';
+                                $receiver_id = $business_Info->business_tin;
+                                $amount = $ramount;
+                                $date_Sent = date('Y-m-d h:i:s');
+                                $time_Sent = date('h:i:s');
+
+                                # confirming the request ...
+
+                                $sql_confirm_request = " UPDATE `request` SET `confirmed_date` = :confirm_date, 
+                                                                            `confirmed_time` =:confirm_time, 
+                                                                            `status` =:bstatus
+                                                                        WHERE `activation_key` = :activation_key";
+
+                                $request_confirmStatement = $pdo->prepare($sql_confirm_request);
+                                $request_confirmStatement->execute([
+                                    'confirm_date'   =>  $date_Sent,
+                                    'confirm_time'   =>  $time_Sent,
+                                    'bstatus'        =>  'confirmed',
+                                    'activation_key' =>  $cpin
+                                ]);
+
+                                # notifications ...
+
+                                $sql_insert_notification = " INSERT INTO `notification_all`(`date_sent`, `time_sent`, `receiver_id`, `sender_id`, `amount`, `action`, `status`) VALUES (:date_sent, :time_sent, :receiver_id, :sender_id, :amount, :naction, :astatus)";
+
+                                $notification_InsertStatement = $pdo->prepare($sql_insert_notification);
+                                $notification_InsertStatement->execute([
+                                    'date_sent'     =>  $date_Sent,
+                                    'time_sent'     =>  $time_Sent,
+                                    'receiver_id'   =>  $receiver_id,
+                                    'sender_id'     =>  $sender_id,
+                                    'amount'        =>  $amount,
+                                    'naction'       =>  'transfer',
+                                    'astatus'       =>  'unread'
+                                ]);
+
+                                if ($sql_insert_notification && $sql_confirm_request) {
+                                    $update_successMessage = " Withdraw Successful" . $successRefreshMessage;
+                                }
+
+                                else {
+                                    $update_errorMessage = " Failed to confirm" . $errorRefreshMessage;
+                                }
+                            }
+
+                            else {
+                                $update_errorMessage = " Failed to withdraw" . $errorRefreshMessage;
+                            }
+                        }
+                    }
+
+                    # otherwise cancel the process ...
+
+                    else {
+                        $update_errorMessage = " Mismatch" . $errorRefreshMessage;
+                    }
+                }
+            }
+        }
+
+        # otherwise wrong activation key 
+
+        else {
+            $update_errorMessage = " No request made" . $errorRefreshMessage;
+        }
     }
 ?>
 

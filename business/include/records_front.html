@@ -1,0 +1,155 @@
+<?php
+    # DOCTYPE html file 1
+    include 'include/header/1_header.html';
+
+    # DOCTYPE html file 2 with style document
+    echo ' Records</title>';
+    include 'include/header/2_header.html';
+
+    # NavBar
+    include 'include/header/nav_header_front.html';
+?>
+
+    <!-- business Profile -->
+    <section id="dashboard bg-light">
+        <div class="container-md">
+
+            <!-- row for admin profile -->
+            <div class="row justify-content-center">
+
+                <!-- Displaying user profile -->
+                <div class="col-lg-12">
+                    <h2 class="text-center">
+                        <span class="text-altprimary fw-bold text-uppercase bi-list-columns">&nbsp;records <span class="d-lg-inline-block d-none">list</span>
+                        </span>
+                    </h2>
+                </div>
+
+            </div>
+
+            <!-- row for business table and list for small media -->
+            <div class="row my-0 g-3 justify-content-around align-items-center">
+                <div class="col-lg-9 col-lg-6">
+
+                    <!-- filter search field -->
+                    <form method="post" class="d-inline">
+                        <div class="input-group mb-2">
+
+                            <div class="form-floating">
+                                <input type="date" name="filter_record_date" class="form-control form-control-sm" placeholder="Agent Name" id="floatingInputGroup1" required>
+                                <label for="floatingInputGroup1"><i class="bi bi-filter-left"></i> Filter Name</label>
+                            </div>
+
+                            <!-- tooltips -->
+                            <div class="input-group-text">
+                                <div class="tt" data-bs-placement="bottom" title="Filter by full name">
+                                    <button type="submit" name="record_filter" class="btn btn-sm"><i class="bi bi-search"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
+                    <?php if($record_updateErrorMessage || $record_deleteErrorMessage || $update_errorMessage) { ?>
+                    <div class="alert alert-warning alert-dismissible fade show alert-danger" role="alert">
+                        <strong class="bi bi-exclamation-triangle"><?php echo $record_updateErrorMessage; echo $record_deleteErrorMessage; echo $update_errorMessage; ?></strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+
+                    <?php } ?>
+
+                    <?php if($record_updateSuccessMessage || $record_deleteSuccessMessage || $update_successMessage) { ?>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <strong class="bi bi-check2-all"><?php echo $record_updateSuccessMessage; echo $record_deleteSuccessMessage; echo $update_successMessage ?></strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    <?php } ?>
+
+                    <!-- For small media -->
+                    <div class="list-group">
+
+                        <?php
+                            # checking if user filtered agent name
+
+                            if (isset($_POST['record_filter'])) {
+                                $filter_record_date = $_POST['filter_record_date'];
+
+                                # Fetching filtered agents info ...
+
+                                $filter_FetchQuery = 'SELECT * FROM `records` WHERE `client_name` = :record_name ORDER BY `rdate` DESC ';
+                                $filter_FetchStatement = $pdo->prepare($filter_FetchQuery);
+                                $filter_FetchStatement->execute([
+                                    'record_name' => $filter_record_date
+                                ]);
+                                $filter_Result = $filter_FetchStatement->fetchAll();
+
+                                if (!$filter_Result) {
+                                    echo '<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                        <strong class="bi bi-check2-all"> Not found'.$errorRefreshMessage.'</strong><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
+                                    } 
+                                    else { 
+                                        echo '<div class="alert alert-success alert-dismissible fade show" role="alert">
+                                            <strong class="bi bi-check2-all"> Match found'.$successRefreshMessage.'</strong><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
+    
+                                        foreach ($filter_Result as $record) { 
+                            ?>
+                            <div class="list-group-item py-3 bg-altlight">
+                                <h5 class="mb-1 text-uppercase"><i class="bi-bell"></i>
+                                    <?php echo $record->client_name ?>
+                                    <span class="badge fw-light bg-success float-end"><small><?php echo $record->status ?></small></span>
+                                </h5>
+
+                                <!-- Fetch record message -->
+                                <p class="mb-1">
+                                    <small class="fw-light"><?php echo $record->client_id ?></small>
+                                </p>
+
+                                <!-- update and delete modal triggers -->
+                                <small class="text-body-secondary">
+                                Received at <?php echo date('M d, Y', strtotime($record->rdate)) ?>
+                                <span class="btn-group-sm float-end">
+                                    <a href="records.php?rID=<?php echo $record->nID ?>" class="btn btn-altdash bi-pencil-square" title="Update" data-bs-toggle="modal" data-bs-target="#updateModal" data-bs-whatever="@update"><span class="d-md-inline-block d-none">&nbsp;Update</span></a>
+                                    <a href="records.php?rID=<?php echo $record->nID ?>" class="btn btn-danger bi-trash3" title="Delete"><span class="d-md-inline-block d-none">&nbsp;Delete</span></a>                                    
+                                    <!-- <button class="btn btn-danger bi-trash3" title="Delete" data-bs-toggle="modal" data-bs-target="#deleteModal" data-bs-whatever="@delete"><span class="d-md-inline-block d-none">&nbsp;Delete</span></button>                                     -->
+                                </span>
+                            </small>
+                            </div>
+                            <?php # } ?>
+                            <?php } } } else { foreach($business_recordResults as $key => $record) {
+                                # To list few of record. 
+                                if ($key == 10) {
+                                    break;
+                                }
+                                else {
+                            ?>
+
+                            <div class="list-group-item py-3 bg-light-subtle">
+                                <h5 class="mb-1 text-uppercase"><i class="bi-view-list"></i>
+                                    <span class='text-success'><?php echo $record->client_name ?></span>
+                                    <span class="badge fw-light bg-success float-end"><small><?php echo $record->status ?></small></span>
+                                </h5>
+
+                                <!-- Fetch record message -->
+                                <p class="mb-1">
+                                    <small class="fw-light"><?php echo $record->client_id ?></small>
+                                </p>
+
+                                <!-- update and delete modal triggers -->
+                                <small class="text-body-secondary">
+                                    Received at <?php echo date('M d, Y', strtotime($record->rdate)) ?>
+                                    <span class="btn-group-sm float-end">
+                                        <!-- <a href="records.php?rID=<?php echo $record->nID ?>" class="btn btn-info bi-folder2-open" title="View"><span class="d-md-inline-block d-none">&nbsp;View</span></a> -->
+                                        <a href="records.php?rID=<?php echo $record->nID ?>" class="btn btn-danger bi-trash3" title="Delete"><span class="d-md-inline-block d-none">&nbsp;Delete</span></a>
+                                    </span>
+                                </small>
+                            </div>
+                            <?php } } 
+                        } ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <?php
+        include 'include/footer_front.html';
+    ?>

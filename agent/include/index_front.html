@@ -1,0 +1,408 @@
+<?php
+    # DOCTYPE html file 1
+    include 'include/header/1_header.html';
+
+    # DOCTYPE html file 2 with style document
+    echo ' Dashboard</title>';
+    include 'include/header/2_header.html';
+
+    # NavBar
+    include 'include/header/nav_header_front.html';
+?>
+
+    <!-- agent Profile -->
+    <section id="dashboard bg-light">
+        <div class="container-md">
+            <div class="text-center">
+                <h2>Welcome <span class="text-altprimary fst-italic fw-bold"><?php echo $agentResults->agent_name ?></span> </h2>
+                <p class="lead text-muted">A quick glance at your profile</p>
+            </div>
+
+            <div class="row my-0 g-3 justify-content-around align-items-center">
+                <div class="col-6 col-lg-4">
+
+                    <!-- Notifying about profile change | Error -->
+                    <?php if($photo_errorMessage): ?>
+                    <div class="alert alert-warning alert-dismissible fade show alert-danger" role="alert">
+                        <strong class="bi bi-exclamation-triangle"><?php echo $photo_errorMessage; ?></strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    <?php endif ?>
+
+                    <!-- Success message - successful changed profile -->
+                    <?php if($photo_successMessage): ?>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <strong class="bi bi-check2-all"><?php echo $photo_successMessage; ?></strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    <?php endif ?>
+
+                    <!-- browsing profile picture or else user svg used -->
+                    <?php if($agentResults->photo): ?>
+                    <img src="../public/profile/<?php echo $agentResults->photo ?>" alt="eBook" class="rounded-5 img-thumbnail border-2 border-dark">
+                    <?php else: ?>
+                    <img src="../public/img/user-profile.svg" alt="eBook" class="rounded-5 img-thumbnail p-5 border-2 border-dark">
+                    <?php endif ?>
+
+                    <form method="post" enctype="multipart/form-data" class="pt-3 input-group">
+                        <input type="file" name="agent-profile" class="form-control ms-2" id="inputGroupFile02" aria-describedby="inputGroupFileAddon02" aria-label="Upload">
+                        <button class="btn btn-dark" name="submit-profile" type="submit" id="inputGroupFileAddon02"><i class="bi bi-cloud-upload-fill"></i></button>
+                        <a href="../agent/" class="btn btn-gold me-2" title="Refresh to see the changes"><i class="bi bi-arrow-counterclockwise"></i></a>
+                    </form>
+
+                </div>
+
+                <!-- accordion -->
+                <div class="col-lg-6">
+
+                    <!-- Notifying about key generate change | Error -->
+                    <?php if($key_errorMessage) { ?>
+                    <div class="alert alert-warning alert-dismissible fade show alert-danger" role="alert">
+                        <strong class="bi bi-exclamation-triangle"><?php echo $key_errorMessage; ?></strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    <?php } ?>
+
+                    <!-- Success message - successful changed profile -->
+                    <?php if($key_successMessage) { ?>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <strong class="bi bi-check2-all"><?php echo $key_successMessage; ?></strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    <?php } ?>
+
+                    <div class="accordion accordion-flush" id="chapters">
+
+                        <!-- agent profile -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading1">
+                                <button class="accordion-button text-light bi-buildings bg-altprimary" type="button" data-bs-toggle="collapse" data-bs-target="#chapter-1" aria-expanded="true" aria-controls="chapter-1">&nbsp;Agent Profile</button>
+                            </h2>
+                            <div id="chapter-1" class="accordion-collapse collapse show" aria-labelledby="heading1" data-bs-parent="#chapters">
+                                <div class="accordion-body">
+                                    <p class="text-muted text-start fst-italic">Review your profile and login credentials <span class="badge bg-gold float-end"><i class="bi bi-person-fill"></i></span></p>
+                                    <p>Name: <span class="fw-medium float-end"><?php echo $agentResults->agent_name ?></span></p>
+                                    <p>Username: <span class="fw-light float-end"><?php echo $agentResults->agent_username ?></span></p>
+                                    <!-- <p>PIN: <span class="fw-light float-end"><?php echo $agentResults->agent_pin ?></span></p> -->
+                                    <p>Tel: <span class="fw-light float-end"><?php echo $agentResults->agent_tel ?></span></p>
+                                    <p>Email: <span class="fw-light float-end"><?php echo $agentResults->agent_mail ?></span></p>
+                                    <p>Balance: <span class="fw-bold float-end"><?php echo number_format($agentResults->agent_balance) ?> rwf</span></p>
+                                    <a href="#edit" class="btn btn-gold bi-pencil-square"><small> Edit</small></a>
+                                    <a href="#withdraw" class="btn btn-success bi-currency-exchange float-end" title="withdraw" data-bs-toggle="modal" data-bs-target="#withdrawModal" data-bs-whatever="@withdraw"><small> Withdraw</small></a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- notification info -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading2">
+                                <button class="accordion-button text-dark bi-bell-fill collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#chapter-2" aria-expanded="false" aria-controls="chapter-2">&nbsp;Notifications</button>
+                            </h2>
+                            <div id="chapter-2" class="accordion-collapse collapse collapse" aria-labelledby="heading2" data-bs-parent="#chapters">
+                                <div class="accordion-body">
+                                    <p class="text-muted text-body-secondary">
+                                        Apparently you have
+                                        <?php echo number_format($registered_notify) ?> Notifications
+                                        <span class="badge bg-gold float-end">
+                                            <i class="bi bi-building"></i>
+                                        </span>
+                                    </p>
+                                    <a href="#notify" class="btn btn-gold bi-view-list mt-2"><small> View Details</small></a>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Notifications info -->
+    <section id="notify" class="bg-light">
+        <div class="container-lg">
+            <div class="text-center">
+                <h2>Your Notifications</h2>
+                <p class="lead text-muted">Get to know recent info about your account.</p>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-lg-6 col-lg-4">
+                    <div class="card border-dark border-2 rounded-3">
+                        <div class="card-header text-center text-dark">Most Recent</div>
+                        <div class="card-body">
+
+                            <!-- Listing user agents -->
+                            <div class="list-group list-group-flush">
+                                <?php foreach($agent_notifyResults as $list_count => $notify){ ?>
+                                <?php 
+                                # To list few of notifys. 
+                                    if ($list_count == 4) {
+                                        break;
+                                    }
+                                    else {
+                                        # getting everything
+
+                                        $client_FetchQuery = 'SELECT * FROM `client` WHERE `client_id` = :receiver_id ';
+                                        $client_FetchStatement = $pdo->prepare($client_FetchQuery);
+                                        $client_FetchStatement->execute([
+                                            'receiver_id'   => $notify->receiver_id
+                                        ]);
+                                        $client_Result = $client_FetchStatement->fetch();
+
+                                        $client_name = $client_Result->client_name;
+                                ?>
+                                <a href="#?vnID=<?php echo $notify->nID ?>" class="list-group-item list-group-item-action">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h5 class="mb-1 text-altprimary text-capitalize">
+                                            <?php 
+                                            if ($notify->status == "read") {
+                                                echo "<span class='text-success'><i class='bi-bell-fill'></i>TPS - ". $notify->action . "</span>";
+                                            } else {
+                                                echo "<span class='text-danger'><i class='bi-bell-fill'></i>TPS - ". $notify->action . "</span>";
+                                            } 
+                                            ?>
+                                        </h5>
+                                        <small class="text-body-secondary">
+                                            <?php
+                                                # Calculating date differences for notifys from database
+                                                // $now = time();
+                                                $now = strtotime(date('Y-m-d h:i:s'));
+                                                $date_sent = $notify->date_sent .' '. $notify->time_sent;
+                                                $cdate = strtotime($date_sent);
+                                                $day_diff = $now - $cdate;
+                                                $hours = floor($day_diff / 3600);
+                                                $minutes = ceil($day_diff / 60 % 60);
+                                                $seconds = ceil($day_diff % 60);
+                                                $day_passed = floor($hours / 24);
+                                                $month = floor($day_passed / 30);
+                                                $years = floor($month / 12);
+                                                if ($years == 0){
+                                                    if ($month == 0){
+                                                        if ($day_passed == 0) {
+                                                            if ($hours == 0) {
+                                                                if ($minutes == 0) {
+                                                                    echo $seconds . " seconds ago";
+                                                                }
+                                                                else{
+                                                                    echo $minutes . " minutes ago";
+                                                                }
+                                                            }
+                                                            else{
+                                                                echo $hours . " hours ago";
+                                                            }
+                                                        }
+                                                        else {
+                                                            echo $day_passed . " days ago";
+                                                        }
+                                                    }
+                                                    else {
+                                                        echo $month . " months ago";
+                                                    }
+                                                }
+                                                else {
+                                                    echo $years . " years ago";
+                                                }
+                                            ?>
+                                        </small>
+                                    </div>
+                                    <p class="mb-1 fw-light">
+                                        <?php if ($notify->action == 'withdraw') { ?>
+                                        <small class="fw-light"><?php echo "Tps M-Card: ". number_format($notify->amount)." RWF withdrawn from account ". $notify->receiver_id ." (". $client_name . ") on ". $notify->date_sent ." at ". $notify->time_sent . "." ?></small>
+                                        <?php } else if ($notify->action == 'topup') { ?>
+                                        <small class="fw-light"><?php echo "Tps M-Card: You have recharged ". $client_name ." (". $notify->receiver_id .") with ". number_format($notify->amount)." RWF on ". $notify->date_sent ." at ". $notify->time_sent . "." ?></small>
+                                        <?php } ?>
+                                    </p>
+                                    <small class="text-body-secondary">Done on <?php echo $notify->date_sent. ' at ' . $notify->time_sent ?></small>
+                                </a>
+                                <?php }?>
+                                <?php }?>
+                            </div>
+
+                            <a href="notification.php" class="btn btn-gold float-end mt-3 bi-view-list"> View More</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Profile edit form -->
+    <section id="edit">
+        <div class="container-lg">
+            <div class="text-center">
+                <h2 class="fw-medium text-gold">Modify your Profile</h2>
+                <p class="lead">Review and modify whatever you wish!</p>
+            </div>
+
+            <div class="row justify-content-center my-5">
+                <div class="col-lg-6">
+
+                    <?php if($errorMessage) { ?>
+                    <div class="alert alert-warning alert-dismissible fade show alert-danger" role="alert">
+                        <strong class="bi bi-exclamation-triangle"><?php echo $errorMessage; ?></strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    <?php } ?>
+
+                    <?php if($successMessage) { ?>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <strong class="bi bi-check2-all"><?php echo $successMessage; ?></strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    <?php } ?>
+
+                    <form method="post">
+                        <!-- post new name -->
+                        <div class="mb-4 input-group">
+                            <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+
+                            <div class="form-floating">
+                                <input type="text" name="agent-name" id="email" class="form-control" value="<?php echo $agentResults->agent_name ?>" id="floatingInputGroup1">
+                                <label for="floatingInputGroup1">New Name</label>
+                            </div>
+
+                            <!-- tooltips -->
+                            <div class="input-group-text">
+                                <span class="tt" data-bs-placement="bottom" title="Re-new your name."><i class="bi bi-info"></i></span>
+                            </div>
+                        </div>
+
+                        <!-- post mail -->
+                        <div class="mb-4 input-group">
+                            <span class="input-group-text"><i class="bi bi-envelope-at-fill"></i></span>
+
+                            <div class="form-floating">
+                                <input type="email" name="agent-mail" id="email" class="form-control" value="<?php echo $agentResults->agent_mail ?>" id="floatingInputGroup1">
+                                <label for="floatingInputGroup1">New Email</label>
+                            </div>
+
+                            <!-- tooltips -->
+                            <div class="input-group-text">
+                                <span class="tt" data-bs-placement="bottom" title="Re-new your email address."><i class="bi bi-info"></i></span>
+                            </div>
+                        </div>
+
+                        <!-- post new username -->
+                        <div class="mb-4 input-group">
+                            <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+
+                            <div class="form-floating">
+                                <input type="text" name="agent-username" id="name" class="form-control" value="<?php  echo $agentResults->agent_username ?>" id="floatingInputGroup1" required>
+                                <label for="floatingInputGroup1">New Username</label>
+                            </div>
+
+                            <!-- tooltips -->
+                            <div class="input-group-text">
+                                <span class="tt" data-bs-placement="bottom" title="Re-new your username!"><i class="bi bi-info"></i></span>
+                            </div>
+                        </div>
+
+                        <!-- post current password -->
+                        <div class="mb-4 input-group">
+                            <span class="input-group-text"><i class="bi bi-key-fill"></i></span>
+
+                            <div class="form-floating">
+                                <input type="password" name="old-password" id="opassword" class="form-control" placeholder="old-password" value="<?php echo $agentResults->agent_password ?>" id="floatingInputGroup1" required>
+                                <label for="floatingInputGroup1">Current Password</label>
+                            </div>
+
+                            <!-- tooltips -->
+                            <div class="input-group-text">
+                                <span class="tt" data-bs-placement="bottom" title="Your current password?"><i class="bi bi-info"></i></span>
+                            </div>
+                        </div>
+
+                        <!-- set new password -->
+                        <div class="mb-4 input-group">
+                            <span class="input-group-text"><i class="bi bi-key-fill"></i></span>
+
+
+                            <div class="form-floating">
+                                <input type="password" name="new-password" id="opassword" class="form-control" placeholder="New" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
+                                    id="floatingInputGroup1" required>
+                                <label for="floatingInputGroup1">Set Password</label>
+                            </div>
+
+                            <div class="form-floating">
+                                <input type="password" name="confirm-password" id="npassword" class="form-control" placeholder="Confirm" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
+                                    id="floatingInputGroup1" required>
+                                <label for="floatingInputGroup1">Confirm Password</label>
+                            </div>
+
+                            <!-- tooltips -->
+                            <div class="input-group-text">
+                                <span class="tt" data-bs-placement="bottom" title="Make sure they match!"><i class="bi bi-info"></i></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-4 text-center">
+                            <button type="submit" name="editinfo" class="btn btn-gold float-end bi-send-check"> Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- withdraw modal -->
+    <div class="modal fade" id="withdrawModal" tabindex="-1" aria-labelledby="withdrawModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-success">
+                    <h1 class="modal-title fs-5 text-altlight text-uppercase bi-currency-exchange fw-bold" id="exampleModalLabel"> Generate OTA</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <form method="post">
+                    <div class="modal-body">
+
+                        <p class="small bi-exclamation-triangle text-muted text-center"> OTA - One Time Activation Key, This key will be nullfied after 24 hours.</p>
+
+                        <!-- amount to withdraw -->
+                        <div class="mb-4 mt-4 input-group">
+                            <span class="input-group-text">
+                                    <i class="bi bi-currency-exchange"></i></span>
+                            <div class="form-floating">
+                                <input type="text" name="ramount" class="form-control" placeholder="Amount to recharge" id="floatingInputGroup1" required>
+                                <label for="floatingInputGroup1">Amount</label>
+                            </div>
+
+                            <!-- tooltips -->
+                            <div class="input-group-text">
+                                <span class="tt" data-bs-placement="bottom" title="How much to recharge?">
+                                    <i class="bi bi-info"></i>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- pin to confirm -->
+                        <div class="mb-4 mt-4 input-group">
+                            <span class="input-group-text">
+                                    <i class="bi bi-123"></i></span>
+                            <div class="form-floating">
+                                <input type="password" name="cpin" class="form-control" placeholder="Confirm PIN" id="floatingInputGroup1" required>
+                                <label for="floatingInputGroup1">Confirm PIN</label>
+                            </div>
+
+                            <!-- tooltips -->
+                            <div class="input-group-text">
+                                <span class="tt" data-bs-placement="bottom" title="Confirm with your PIN">
+                                    <i class="bi bi-info"></i>
+                                </span>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary bi-x-lg" data-bs-dismiss="modal"> Cancel</button>
+                        <button type="submit" name="generateKey" class="btn btn-success float-end bi-send-check"> Generate Key</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <?php
+        include 'include/footer_front.html';
+    ?>

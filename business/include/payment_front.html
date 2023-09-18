@@ -1,0 +1,491 @@
+<?php
+    # DOCTYPE html file 1
+    include 'include/header/1_header.html';
+
+    # DOCTYPE html file 2 with style document
+    echo ' Payment</title>';
+    include 'include/header/2_header.html';
+
+    # NavBar
+    include 'include/header/nav_header_front.html';
+?>
+
+    <!-- client Profile and Tables -->
+    <section id="dashboard bg-light">
+        <div class="container-md">
+
+            <!-- row for client profile -->
+            <div class="row">
+
+                <!-- Displaying user profile -->
+                <div class="col">
+                    <h2 class="float-start">
+                        <!-- browsing profile picture or else user svg used -->
+                        <?php if($businessResults->photo): ?>
+                        <img src="../public/profile/<?php echo $businessResults->photo ?>" alt="Profile" class="img-fluid rounded-1 d-md-inline d-none" style="width: 40px;">
+                        <?php else: ?>
+                        <img src="../public/img/user-profile.svg" alt="eBook" class="img-fluid rounded-1 d-md-inline d-none" style="width: 40px;">
+                        <?php endif ?>
+                        <span class="text-altprimary fw-bold text-uppercase">
+                            <?php # $businessResults->business_name ?> Payment <span class="d-lg-inline-block d-none">list</span>
+                        </span>
+                    </h2>
+                </div>
+
+                <!-- button for getting paid  -->
+                <div class="col">
+                    <div class="input-group justify-content-end">
+                        <button class="btn btn-gold bi-cash-coin" title="Topup" data-bs-toggle="modal" data-bs-target="#updateModal" data-bs-whatever="@update"><span class="d-lg-inline-block d-none" title="Top Up">&nbsp;Get Paid</span></button>
+                    </div>
+                </div>
+
+                <!-- refresh -->
+                <form method="post" class="float-end col-1 ms-3 d-md-none">
+                    <div class="input-group justify-content-end">
+                        <a href="payment.php" class="btn btn-outline-gold text-dark bi-arrow-clockwise"></a>
+                    </div>
+                </form>
+
+                <!-- filters and search box -->
+                <form method="post" class="col-3 float-end d-md-inline col-md-4 d-none">
+                    <div class="input-group">
+
+                        <div class="form-floating">
+                            <input type="text" name="filter_client_name" class="form-control form-control-sm" placeholder="Client Name" id="floatingInputGroup1" required>
+                            <label for="floatingInputGroup1"><i class="bi bi-filter-left"></i> Filter Name</label>
+                        </div>
+
+                        <!-- tooltips -->
+                        <div class="input-group-text">
+                            <div class="tt" data-bs-placement="bottom" title="Filter by full name">
+                                <button type="submit" name="client_filter" class="btn btn-sm"><i class="bi bi-search"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+            <div class="badge bg-success">
+                <p class="lead p-2 d-inline text-light">Balance: <?php echo number_format($businessResults->balance) ?> RWF</p>
+            </div>
+
+            <!-- filter search field -->
+            <form method="post" class="d-md-none d-inline">
+                <div class="input-group mt-2">
+
+                    <div class="form-floating">
+                        <input type="text" name="filter_client_name" class="form-control form-control-sm" placeholder="business Name" id="floatingInputGroup1" required>
+                        <label for="floatingInputGroup1"><i class="bi bi-filter-left"></i> Filter Name</label>
+                    </div>
+
+                    <!-- tooltips -->
+                    <div class="input-group-text">
+                        <div class="tt" data-bs-placement="bottom" title="Filter by full name">
+                            <button type="submit" name="client_filter" class="btn btn-sm"><i class="bi bi-search"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <!-- row for client table and list for small media -->
+            <div class="row my-0 g-3 justify-content-around align-items-center">
+                <div class="col-lg-12 col-lg-6">
+
+                    <!-- Error messages -->
+                    <?php if($client_errorMessage || $client_deleteErrorMessage || $update_errorMessage) { ?>
+                    <div class="alert alert-warning alert-dismissible fade show alert-danger" role="alert">
+                        <strong class="bi bi-exclamation-triangle">
+                            <?php 
+                                echo $client_errorMessage; 
+                                echo $client_deleteErrorMessage; 
+                                echo $update_errorMessage; 
+                            ?>
+                        </strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+
+                    <?php } ?>
+
+                    <!-- success messages -->
+                    <?php if($client_successMessage || $client_deleteSuccessMessage || $update_successMessage) { ?>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <strong class="bi bi-check2-all">
+                            <?php 
+                                echo $client_successMessage; 
+                                echo $client_deleteSuccessMessage; 
+                                echo $update_successMessage 
+                            ?>
+                        </strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    <?php } ?>
+
+                    <!-- for large media -->
+                    <div class="d-lg-block d-none text-capitalize">
+                        <table class="table table-hover">
+                            <caption class="text-center fw-light">List of Registered client by you</caption>
+                            <thead class="table-primary">
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col"><i class="bi bi-person-circle"></i></th>
+                                    <th scope="col">Created_at</th>
+                                    <th scope="col">Client ID</th>
+                                    <th scope="col">Client Name</th>
+                                    <th scope="col">Tel No</th>
+                                    <th scope="col">E-mail</th>
+                                    <th scope="col" class="text-end">Amount</th>
+                                    <th scope="col">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                <?php 
+                                # checking if user filtered business name
+
+                                if (isset($_POST['client_filter'])) {
+                                    
+                                    $filter_client_name = $_POST['filter_client_name'];
+
+                                    # Fetching filtered businesss info ...
+
+                                    $filter_FetchQuery = 'SELECT * FROM `records` WHERE `client_name` = :client_name ORDER BY `rdate` DESC';
+                                    $filter_FetchStatement = $pdo->prepare($filter_FetchQuery);
+                                    $filter_FetchStatement->execute([
+                                        'client_name'   => $filter_client_name
+                                    ]);
+                                    $filter_Result = $filter_FetchStatement->fetchAll();
+
+                                    if (!$filter_Result) {
+                                        echo '<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                            <strong class="bi bi-check2-all"> Not found '.$errorRefreshMessage.'</strong><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
+                                        } 
+                                        else { 
+                                            echo '<div class="alert alert-success alert-dismissible fade show" role="alert">
+                                                <strong class="bi bi-check2-all"> Match found '.$successRefreshMessage.'</strong><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
+                                            $no = 1; 
+                                            foreach($filter_Result as $record) {
+
+                                                # fetch client details
+                                                $client_id = $record->client_id;
+                                                $clientFetchQuery = 'SELECT * FROM `client` WHERE `client_id` = :clientid';
+                                                $clientFetchStatement = $pdo->prepare($clientFetchQuery);
+                                                $clientFetchStatement->execute([
+                                                    'clientid' => $client_id
+                                                ]);
+                                                $clientResults = $clientFetchStatement->fetch();
+                                    ?>
+                                <tr>
+                                    <th scope="row">
+                                        <?php echo $no ?>
+                                    </th>
+                                    <td><i class="bi bi-person-circle"></i></td>
+                                    <td>
+                                        <?php echo date('M d, Y', strtotime($record->rdate)) ?>
+                                    </td>
+                                    <td>
+                                        <?php echo $record->client_id ?>
+                                    </td>
+                                    <td class='text-uppercase'><?php echo $record->client_name ?></td>
+                                    <td class='text-lowercase'><?php echo $clientResults->client_tel ?></td>
+                                    <td class='text-lowercase'><?php echo $clientResults->client_mail ?></td>
+                                    <td class="text-end">
+                                        <?php echo number_format($record->amount) ?>
+                                    </td>
+                                    <?php 
+                                    if ($record->amount == 0) {
+                                        echo "<td class='fw-light text-altlight bg-danger text-center'><small>Unpaid</small></td>";
+                                    } else {
+                                        echo "<td class='fw-light text-altlight bg-success text-center'><small>paid</small></td>"; 
+                                    }
+                                ?>
+                                </tr>
+                                <?php $no++; } } } else { ?>
+
+                                <?php 
+                                    $no = 1; 
+                                    foreach($recordResults as $record) {
+
+                                        # fetch client details
+                                        $client_id = $record->client_id;
+                                        $clientFetchQuery = 'SELECT * FROM `client` WHERE `client_id` = :clientid';
+                                        $clientFetchStatement = $pdo->prepare($clientFetchQuery);
+                                        $clientFetchStatement->execute([
+                                            'clientid' => $client_id
+                                        ]);
+                                        $clientResults = $clientFetchStatement->fetch();
+                                ?>
+                                <tr>
+                                    <th scope="row">
+                                        <?php echo $no ?>
+                                    </th>
+                                    <td><i class="bi bi-person-circle"></i></td>
+                                    <td>
+                                        <?php echo date('M d, Y', strtotime($record->rdate)) ?>
+                                    </td>
+                                    <td>
+                                        <?php echo $record->client_id ?>
+                                    </td>
+                                    <td class='text-uppercase'><?php echo $record->client_name ?></td>
+                                    <td class='text-lowercase'><?php echo $clientResults->client_tel ?></td>
+                                    <td class='text-lowercase'><?php echo $clientResults->client_mail ?></td>
+                                    <td class="text-end">
+                                        <?php echo number_format($record->amount) ?>
+                                    </td>
+                                    <?php 
+                                    if ($record->amount == 0) {
+                                        echo "<td class='fw-light text-altlight bg-danger text-center'><small>Unpaid</small></td>";
+                                    } else {
+                                        echo "<td class='fw-light text-altlight bg-success text-center'><small>paid</small></td>"; 
+                                    }
+                                ?>
+                                    <?php $no++; } } ?>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- For small media -->
+                    <div class="list-group d-lg-none">
+
+                        <?php 
+                        # checking if user filtered business name
+
+                        if (isset($_POST['client_filter'])) {
+                            
+                            $filter_client_name = $_POST['filter_client_name'];
+
+                            # Fetching filtered businesss info ...
+
+                            $filter_FetchQuery = 'SELECT * FROM `records` WHERE `client_name` = :client_name ORDER BY `rdate` DESC';
+                            $filter_FetchStatement = $pdo->prepare($filter_FetchQuery);
+                            $filter_FetchStatement->execute([
+                                'client_name'   => $filter_client_name
+                            ]);
+                            $filter_Result = $filter_FetchStatement->fetchAll();
+
+                            if (!$filter_Result) {
+                                echo '<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                    <strong class="bi bi-check2-all"> Not found '.$errorRefreshMessage.'</strong><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
+                                } 
+                                else { 
+                                    echo '<div class="alert alert-success alert-dismissible fade show" role="alert">
+                                        <strong class="bi bi-check2-all"> Match found '.$successRefreshMessage.'</strong><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
+                                    $no = 1; 
+                                    foreach($filter_Result as $clt_count => $record) {
+                                        # fetch client details
+                                        $client_id = $record->client_id;
+                                        $clientFetchQuery = 'SELECT * FROM `client` WHERE `client_id` = :clientid';
+                                        $clientFetchStatement = $pdo->prepare($clientFetchQuery);
+                                        $clientFetchStatement->execute([
+                                            'clientid' => $client_id
+                                        ]);
+                                        $clientResults = $clientFetchStatement->fetch();
+                        ?>
+                        <?php 
+                            # To list few of clients. 
+                                #if ($client_count != 0) {
+                                #    continue;
+                                #}
+                                #else {
+                        ?>
+                        <div class="list-group-item py-3">
+                            <h5 class="mb-1 text-uppercase">
+                                <?php 
+                                    if ($record->amount > 0) {
+                                        echo "<span class='text-success'><i class='bi bi-person-circle text-altprimary-emphasis'></i>&nbsp;". $record->client_name . "</span>";
+                                ?>
+                                <span class="badge fw-light bg-success float-end"><small class="d-md-block d-none">Paid <?php # echo $client->status ?></small><i class="d-md-none bi-check2-all"></i></span>
+                                <?php 
+                                    } else {
+                                        echo "<span class='text-danger'><i class='bi bi-person-circle text-altprimary-emphasis'></i>&nbsp;". $record->client_name . "</span>";
+                                ?>
+                                <span class="badge fw-light bg-danger float-end"><small class="d-md-block d-none">Unpaid <?php # echo $client->status ?></small><i class="d-md-none bi-exclamation-triangle"></i></span>
+                                <?php } ?>
+                            </h5>
+
+                            <!-- Fetch client Location -->
+                            <p class="mb-1 fw-medium small">Client ID:
+                                <span class="fw-light float-end"><?php echo $record->client_id; ?></span>
+                            </p>
+
+                            <!-- Fetch phone number -->
+                            <p class="mb-1 fw-medium small">Tel:
+                                <span class="fw-light float-end">
+                                    <?php echo $clientResults->client_tel ?>
+                                </span>
+                            </p>
+
+                            <!-- Fetch email -->
+                            <p class="mb-1 fw-medium small">Email:
+                                <span class="fw-light float-end">
+                                    <?php echo $clientResults->client_mail ?>
+                                </span>
+                            </p>
+
+                            <!-- Fetch amount -->
+                            <p class="mb-1 fw-medium small">Amount:
+                                <span class="fw-medium float-end">
+                                    <?php echo number_format($record->amount) ?> Rwf
+                                </span>
+                            </p>
+
+                            <!-- update and delete modal triggers -->
+                            <small class="fw-light small float-end border-top text-muted">
+                                Paid on <?php echo date('M d, Y', strtotime($record->rdate)). ' at ' .date('h:i', strtotime($record->rtime))?>
+                                <span class="btn-group-sm float-end">
+                                    <!-- <button class="btn btn-altdash bi-pencil-square" title="Modify" data-bs-toggle="modal" data-bs-target="#modifyModal" data-bs-whatever="@modify"><span class="d-md-inline-block d-none">&nbsp;Update</span></button> -->
+                                    <!-- <a href="client.php?dbID=<?php echo $client->cID ?>" class="btn btn-danger bi-trash3" title="Delete"><span class="d-md-inline-block d-none">&nbsp;Delete</span></a> -->
+                                </span>
+                            </small>
+                        </div>
+                        <?php # printing otherwise if not filtered by name ?>
+                        <?php } } } else { foreach($recordResults as $key => $record) {
+
+                            # fetch client details
+                            $client_id = $record->client_id;
+                            $clientFetchQuery = 'SELECT * FROM `client` WHERE `client_id` = :clientid';
+                            $clientFetchStatement = $pdo->prepare($clientFetchQuery);
+                            $clientFetchStatement->execute([
+                                'clientid' => $client_id
+                            ]);
+                            $clientResults = $clientFetchStatement->fetch();
+                            ?>
+
+                        <div class="list-group-item py-3">
+                            <h5 class="mb-1 text-uppercase">
+                                <?php 
+                                    if ($record->amount > 0) {
+                                        echo "<span class='text-success'><i class='bi bi-person-circle text-altprimary-emphasis'></i>&nbsp;". $record->client_name . "</span>";
+                                ?>
+                                <span class="badge fw-light bg-success float-end"><small class="d-md-block d-none">Paid <?php # echo $client->status ?></small><i class="d-md-none bi-check2-all"></i></span>
+                                <?php 
+                                    } else {
+                                        echo "<span class='text-danger'><i class='bi bi-person-circle text-altprimary-emphasis'></i>&nbsp;". $record->client_name . "</span>";
+                                ?>
+                                <span class="badge fw-light bg-danger float-end"><small class="d-md-block d-none">Unpaid <?php # echo $client->status ?></small><i class="d-md-none bi-exclamation-triangle"></i></span>
+                                <?php } ?>
+                            </h5>
+
+                            <!-- Fetch client Location -->
+                            <p class="mb-1 fw-medium small">Client ID:
+                                <span class="fw-light float-end"><?php echo $record->client_id; ?></span>
+                            </p>
+
+                            <!-- Fetch phone number -->
+                            <p class="mb-1 fw-medium small">Tel:
+                                <span class="fw-light float-end">
+                                    <?php echo $clientResults->client_tel ?>
+                                </span>
+                            </p>
+
+                            <!-- Fetch email -->
+                            <p class="mb-1 fw-medium small">Email:
+                                <span class="fw-light float-end">
+                                    <?php echo $clientResults->client_mail ?>
+                                </span>
+                            </p>
+
+                            <!-- Fetch amount -->
+                            <p class="mb-1 fw-medium small">Amount:
+                                <span class="fw-medium float-end">
+                                    <?php echo number_format($record->amount) ?> Rwf
+                                </span>
+                            </p>
+
+                            <!-- update and delete modal triggers -->
+                            <small class="fw-light small float-end border-top text-muted">
+                                Paid on <?php echo date('M d, Y', strtotime($record->rdate)). ' at ' .date('h:i', strtotime($record->rtime))?>
+                                <span class="btn-group-sm float-end">
+                                    <!-- <button class="btn btn-altdash bi-pencil-square" title="Modify" data-bs-toggle="modal" data-bs-target="#modifyModal" data-bs-whatever="@modify"><span class="d-md-inline-block d-none">&nbsp;Update</span></button> -->
+                                    <!-- <a href="client.php?dbID=<?php echo $client->cID ?>" class="btn btn-danger bi-trash3" title="Delete"><span class="d-md-inline-block d-none">&nbsp;Delete</span></a> -->
+                                </span>
+                            </small>
+                        </div>
+                        <?php } } ?>
+                    </div>
+
+                    <form method="post" class="input-group justify-content-end d-md-flex">
+                        <a href="export/export_excel.php" type="submit" class="btn btn-outline-success float-end mt-3 bi-filetype-xlsx" title="View More Details"> <span class="d-md-inline-block d-none">Excel</span></a>
+                        <!-- <a href="export/export_client_pdf.php" type="submit" class="btn btn-altorange float-end mt-3 bi-file-pdf bi-download" title="View More Details"> <span class="d-md-inline-block d-none">Pdf</span></a> -->
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal Lists -->
+    <div>
+        <!-- recharge modal -->
+        <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header bg-gold">
+                        <h1 class="modal-title fs-5 text-altlight text-uppercase bi-currency-exchange fw-bold" id="exampleModalLabel"> Get Paid</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <form method="post">
+                        <div class="modal-body">
+
+                            <!-- enter client id to pay -->
+                            <div class="mb-4 input-group">
+                                <span class="input-group-text"><i class="bi bi-credit-card-2-back-fill"></i></span>
+
+                                <div class="form-floating">
+                                    <input type="text" name="client_id" class="form-control" placeholder="client_id" id="floatingInputGroup1" required>
+                                    <label for="floatingInputGroup1">Place Card</label>
+                                </div>
+
+                                <!-- tooltips -->
+                                <div class="input-group-text">
+                                    <span class="tt" data-bs-placement="bottom" title="Place your card"><i class="bi bi-info"></i></span>
+                                </div>
+                            </div>
+
+                            <!-- amount to pay -->
+                            <div class="mb-4 input-group">
+                                <span class="input-group-text"><i class="bi bi-currency-exchange"></i></span>
+
+                                <div class="form-floating">
+                                    <input type="text" name="pamount" class="form-control" placeholder="Amount to pay" id="floatingInputGroup1" required>
+                                    <label for="floatingInputGroup1">Amount</label>
+                                </div>
+
+                                <!-- tooltips -->
+                                <div class="input-group-text">
+                                    <span class="tt" data-bs-placement="bottom" title="How much are you charging?"><i class="bi bi-info"></i></span>
+                                </div>
+                            </div>
+
+                            <!-- confirm with client pin -->
+                            <div class="mb-4 input-group">
+                                <span class="input-group-text"><i class="bi bi-123"></i></span>
+
+                                <div class="form-floating">
+                                    <input type="password" name="confirm_pay" class="form-control" placeholder="Client PIN" id="floatingInputGroup1" required>
+                                    <label for="floatingInputGroup1">Enter PIN</label>
+                                </div>
+
+                                <!-- tooltips -->
+                                <div class="input-group-text">
+                                    <span class="tt" data-bs-placement="bottom" title="Confirm Payment with client PIN"><i class="bi bi-info"></i></span>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary bi-x-lg" data-bs-dismiss="modal"> Cancel</button>
+                            <button type="submit" name="client_pay" class="btn btn-gold float-end bi-send-check"> Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <?php
+        include 'include/footer_front.html';
+    ?>

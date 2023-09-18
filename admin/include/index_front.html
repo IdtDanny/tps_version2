@@ -1,0 +1,443 @@
+<?php
+    # DOCTYPE html file 1
+    include 'header/1_header.html';
+
+    # DOCTYPE html file 2 with style document
+    echo ' Dashboard</title>';
+    include 'header/2_header.html';
+
+    # NavBar
+    include 'header/nav_header_front_1.html';
+    echo '
+    <li class="nav-item">
+        <a href="index.php" class="nav-link d-md-block d-none bi-arrow-clockwise"></a>
+    </li>
+    ';
+    include 'header/nav_header_front_2.html';
+?>
+
+    <!-- Admin Profile -->
+    <section id="dashboard bg-light">
+        <div class="container-md">
+            <div class="text-center">
+                <h2>Welcome <span class="text-altprimary fst-italic fw-bold"><?php echo $adminResults->admin_name ?></span> </h2>
+                <p class="lead text-muted">A quick glance at your profile</p>
+            </div>
+
+            <div class="row my-0 g-3 justify-content-around align-items-center">
+                <div class="col-6 col-lg-4">
+
+                    <!-- Notifying about profile change | Error -->
+                    <?php if($photo_errorMessage): ?>
+                    <div class="alert alert-warning alert-dismissible fade show alert-danger" role="alert">
+                        <strong class="bi bi-exclamation-triangle"><?php echo $photo_errorMessage; ?></strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    <?php endif ?>
+
+                    <!-- Success message - successful changed profile -->
+                    <?php if($photo_successMessage): ?>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <strong class="bi bi-check2-all"><?php echo $photo_successMessage; ?></strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    <?php endif ?>
+
+                    <!-- browsing profile picture or else user svg used -->
+                    <?php if($adminResults->admin_profile): ?>
+                    <img src="../public/profile/<?php echo $adminResults->admin_profile ?>" alt="eBook" class="rounded-5 img-thumbnail border-2 border-dark">
+                    <?php else: ?>
+                    <img src="../public/img/user-profile.svg" alt="eBook" class="rounded-5 img-thumbnail p-5 border-2 border-dark">
+                    <?php endif ?>
+
+                    <form method="post" enctype="multipart/form-data" class="pt-3 input-group">
+                        <input type="file" name="admin-profile" class="form-control ms-2" id="inputGroupFile02" aria-describedby="inputGroupFileAddon02" aria-label="Upload">
+                        <button class="btn btn-dark" name="submit-profile" type="submit" id="inputGroupFileAddon02"><i class="bi bi-cloud-upload-fill"></i></button>
+                        <a href="../admin/" class="btn btn-gold me-2" title="Refresh to see the changes"><i class="bi bi-arrow-counterclockwise"></i></a>
+                    </form>
+
+                </div>
+
+                <!-- accordion -->
+                <div class="col-lg-6">
+                    <div class="accordion accordion-flush" id="chapters">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading1">
+                                <button class="accordion-button text-light bi-person-fill-gear bg-dark" type="button" data-bs-toggle="collapse" data-bs-target="#chapter-1" aria-expanded="true" aria-controls="chapter-1">&nbsp;Personal Profile</button>
+                            </h2>
+                            <div id="chapter-1" class="accordion-collapse collapse show" aria-labelledby="heading1" data-bs-parent="#chapters">
+                                <div class="accordion-body">
+                                    <p class="text-muted text-start fst-italic">Review your profile and login credentials <span class="badge bg-gold float-end"><i class="bi bi-person-fill"></i></span></p>
+                                    <p>Full Name: <span class="fw-medium float-end"><?php echo $adminResults->admin_name ?></span></p>
+                                    <p>Username: <span class="fw-light float-end"><?php echo $adminResults->admin_username ?></span></p>
+                                    <p>Email: <span class="fw-light fst-italic float-end"><?php echo $adminResults->admin_email ?></span></p>
+                                    <p>Balance: <span class="fw-bold float-end"><?php echo number_format($adminResults->Balance) ?> rwf</span></p>
+                                    <a href="#edit" class="btn btn-gold bi-pencil-square"><small> Edit</small></a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Business info -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading2">
+                                <button class="accordion-button text-dark bi-building-fill collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#chapter-2" aria-expanded="false" aria-controls="chapter-2">&nbsp;Business Info</button>
+                            </h2>
+                            <div id="chapter-2" class="accordion-collapse collapse collapse" aria-labelledby="heading2" data-bs-parent="#chapters">
+                                <div class="accordion-body">
+                                    <p class="text-muted fst-italic">
+                                        Apparently there are
+                                        <?php echo number_format($registered_business) ?> Registered Business
+                                        <span class="badge bg-gold float-end">
+                                        <i class="bi bi-building"></i>
+                                    </span>
+                                    </p>
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item fw-medium">
+                                            Gas Stations:
+                                            <span class="fw-light float-end">
+                                            <?php echo $gas_business ?> Stations
+                                        </span>
+                                        </li>
+                                        <li class="list-group-item fw-medium">
+                                            Other Type:
+                                            <span class="fw-light float-end">
+                                            <?php echo number_format($others_business) ?> Businesses
+                                        </span>
+                                        </li>
+                                    </ul>
+                                    <a href="#business" class="btn btn-gold bi-view-list mt-2"><small> View Details</small></a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Agents info -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading3">
+                                <button class="accordion-button collapsed bi-journal-bookmark-fill" type="button" data-bs-toggle="collapse" data-bs-target="#chapter-3" aria-expanded="false" aria-controls="chapter-3">&nbsp;Agents Info</button>
+                            </h2>
+                            <div id="chapter-3" class="accordion-collapse collapse collapse" aria-labelledby="heading3" data-bs-parent="#chapters">
+                                <div class="accordion-body">
+                                    <p class="text-muted fst-italic">
+                                        Apparently there are:
+                                        <span class="badge bg-gold float-end"><i class="bi bi-building"></i></span>
+                                    </p>
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item fw-medium">
+                                            Agents:
+                                            <span class="fw-light float-end"><?php echo $agentsCount ?> Agents</span>
+                                        </li>
+                                    </ul>
+                                    <a href="#agent" class="btn btn-altprimary bi-view-list mt-2"><small> View more</small></a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Clients info -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading4 client">
+                                <button class="accordion-button collapsed bi-credit-card-fill" type="button" data-bs-toggle="collapse" data-bs-target="#chapter-4" aria-expanded="false" aria-controls="chapter-4">&nbsp;Card Info</button>
+                            </h2>
+                            <div id="chapter-4" class="accordion-collapse collapse collapse" aria-labelledby="heading3" data-bs-parent="#chapters">
+                                <div class="accordion-body">
+                                    <p class="text-muted fst-italic">
+                                        Apparently there are:
+                                        <span class="badge bg-info float-end"><i class="bi bi-credit-card-fill"></i></span>
+                                    </p>
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item fw-medium">
+                                            Clients:
+                                            <span class="fw-light float-end"><?php echo $registered_client ?> Registered cards</span>
+                                        </li>
+                                    </ul>
+                                    <a href="client.php" class="btn btn-info bi-view-list mt-2"><small> View more</small></a>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Business review -->
+    <section id="business" class="bg-light">
+        <div class="container-lg">
+            <div class="text-center text-gold">
+                <h2><i class="bi bi-stars"></i> Business Reviews</h2>
+                <p class="lead text-muted">Different business and their current progress</p>
+            </div>
+
+            <div class="row justify-content-center my-5">
+                <div class="col-lg-8">
+                    <div class="list-group">
+                        <?php foreach ($business_Result as $busy_count => $business){ ?>
+                        <?php 
+                        # To list few of agents. 
+                            if ($busy_count == 3) {
+                                break;
+                            }
+                            else {
+                    ?>
+                        <div class="list-group-item py-3">
+                            <h5 class="mb-1 text-uppercase">
+                                <?php 
+                                    if ($business->status == "Active") { 
+                                        if ($business->business_type == "gas") {
+                                            echo '<span class="text-success"><i class="bi-fuel-pump-fill"></i> '. $business->business_name . '</span>';
+                                        } 
+                                        else { 
+                                            echo '<span class="text-success"><i class="bi-buildings-fill"></i> '. $business->business_name . '</span>';
+                                        }
+                                        echo '<span class="badge fw-light bg-success float-end"><i class="d-md-none d-inline bi-check2-all"></i><small class="d-md-inline d-none">'. $business->status .'</small></span>';
+                                    } 
+                                    else {
+                                        if ($business->business_type == "gas") {
+                                            echo '<span class="text-danger"><i class="bi-fuel-pump-fill"></i> '. $business->business_name . '</span>';
+                                        } 
+                                        else { 
+                                            echo '<span class="text-danger"><i class="bi-buildings-fill"></i> '. $business->business_name . '</span>';
+                                        }
+                                        echo '<span class="badge fw-light bg-danger float-end"><i class="d-md-none d-inline bi-exclamation-triangle-fill"></i><small class="d-md-inline d-none">'. $business->status .'</small></span>';
+                                    }
+                                    ?>
+                            </h5>
+
+                            <p class="mb-1 fw-medium small">Location:
+                                <span class="fw-light">
+                            <?php
+                                # Fetching business location info ...
+
+                                $business_tin = $business->business_tin;
+
+                                $buslocation_FetchQuery = 'SELECT * FROM `business_location` WHERE `business_tin` = :btin';
+                                $buslocation_FetchStatement = $pdo->prepare($buslocation_FetchQuery);
+                                $buslocation_FetchStatement->execute([
+                                            'btin'  =>  $business_tin
+                                        ]);
+                                $buslocation_Result = $buslocation_FetchStatement->fetch(); 
+
+                                echo $buslocation_Result->district . " District - ";
+                                echo $buslocation_Result->sector . " Sector";
+                            ?>
+                            </span>
+                            </p>
+
+                            <p class="mb-1 fw-medium small">TIN:
+                                <span class="fw-light"><?php echo $business->business_tin ?></span>
+                            </p>
+                            <small class="text-muted">Approved by <?php echo $admin_username ?></small>
+                        </div>
+                        <?php } ?>
+                        <?php } ?>
+                    </div>
+                    <a href="../admin/business.php" class="btn btn-gold float-end mt-3 bi-database" title="View More Details"> View More</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Agent info -->
+    <section id="agent">
+        <div class="container-lg">
+            <div class="text-center">
+                <h2>Your current agents</h2>
+                <p class="lead text-muted">Interact and reach out to agents.</p>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-lg-6 col-lg-4">
+                    <div class="card border-dark border-2 rounded-3">
+                        <div class="card-header text-center text-dark">Most Recent</div>
+                        <div class="card-body">
+
+                            <!-- Listing user agents -->
+                            <div class="list-group list-group-flush">
+                                <?php foreach($agent_Result as $list_count => $agent){ ?>
+                                <?php 
+                            # To list few of agents. 
+                                if ($list_count == 4) {
+                                    break;
+                                }
+                                else {
+                            ?>
+                                <a href="#?<?php echo $agent->aID ?>" class="list-group-item list-group-item-action">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1 fw-bold">
+                                            <img src="../public/profile/<?php echo $agent->photo ?>" class="img-fluid rounded-1" style="width: 30px;">&nbsp;
+                                            <?php echo $agent->agent_name ?>
+                                        </h6>
+                                        <small class="text-success">
+                                        <?php
+                                            # Calculating date differences for agents from database
+                                            $now = strtotime(date('Y-m-d h:i:s'));
+                                            $cdate = strtotime($agent->created_at);
+                                            $day_diff = $now - $cdate;
+                                            $hours = floor($day_diff / 3600);
+                                            $minutes = ceil($day_diff / 60 % 60);
+                                            $seconds = ceil($day_diff % 60);
+                                            $day_passed = floor($hours / 24);
+                                            $month = floor($day_passed / 30);
+                                            $years = floor($month / 12);
+                                            if ($years == 0){
+                                                if ($month == 0){
+                                                    if ($day_passed == 0) {
+                                                        if ($hours == 0) {
+                                                            if ($minutes == 0) {
+                                                                echo $seconds . " seconds ago";
+                                                            }
+                                                            else{
+                                                                echo $minutes . " minutes ago";
+                                                            }
+                                                        }
+                                                        else{
+                                                            echo $hours . " hours ago";
+                                                        }
+                                                    }
+                                                    else {
+                                                        echo $day_passed . " days ago";
+                                                    }
+                                                }
+                                                else {
+                                                    echo $month . " months ago";
+                                                }
+                                            }
+                                            else {
+                                                echo $years . " years ago";
+                                            }
+                                            ?>
+                                        </small>
+                                    </div>
+                                    <p class="mb-1 small">Holds accountable using <em class="fw-light"><?php echo $agent->agent_username ?></em> as username.</p>
+                                    <small class="text-muted">User_ID: <?php echo $agent->aID ?></small>
+                                </a>
+                                <?php }?>
+                                <?php }?>
+                            </div>
+
+                            <a href="agent.php" class="btn btn-altprimary bi-view-list float-end mt-3"> View More</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Profile edit form -->
+    <section id="edit" class="bg-light">
+        <div class="container-lg">
+            <div class="text-center">
+                <h2 class="fw-medium text-gold">Modify your Profile</h2>
+                <p class="lead">Review and modify whatever you wish!</p>
+            </div>
+
+            <div class="row justify-content-center my-5">
+                <div class="col-lg-6">
+
+                    <?php if($errorMessage) { ?>
+                    <div class="alert alert-warning alert-dismissible fade show alert-danger" role="alert">
+                        <strong class="bi bi-exclamation-triangle"><?php echo $errorMessage; ?></strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    <?php } ?>
+
+                    <?php if($successMessage) { ?>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <strong class="bi bi-check2-all"><?php echo $successMessage; ?></strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    <?php } ?>
+
+                    <form method="post">
+                        <!-- post new full name -->
+                        <div class="mb-4 input-group">
+                            <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                            <div class="form-floating">
+                                <input type="text" name="admin-name" id="email" class="form-control" placeholder="<?php echo $adminResults->admin_name ?>" id="floatingInputGroup1">
+                                <label for="floatingInputGroup1">Update Name</label>
+                            </div>
+
+                            <!-- tooltips -->
+                            <div class="input-group-text">
+                                <span class="tt" data-bs-placement="bottom" title="Re-new your email address."><i class="bi bi-info"></i></span>
+                            </div>
+                        </div>
+
+                        <!-- post new email address -->
+                        <div class="mb-4 input-group">
+                            <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
+                            <div class="form-floating">
+                                <input type="email" name="admin-mail" id="email" class="form-control" placeholder="<?php echo $adminResults->admin_name ?>" id="floatingInputGroup1">
+                                <label for="floatingInputGroup1">Update your email</label>
+                            </div>
+
+                            <!-- tooltips -->
+                            <div class="input-group-text">
+                                <span class="tt" data-bs-placement="bottom" title="Re-new your email address."><i class="bi bi-info"></i></span>
+                            </div>
+                        </div>
+
+                        <!-- post new username -->
+                        <div class="mb-4 input-group">
+                            <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                            <div class="form-floating">
+                                <input type="text" name="admin-username" id="name" class="form-control" placeholder="<?php  echo $adminResults->admin_username ?>" id="floatingInputGroup1" required>
+                                <label for="floatingInputGroup1">Update username</label>
+                            </div>
+
+                            <!-- tooltips -->
+                            <div class="input-group-text">
+                                <span class="tt" data-bs-placement="bottom" title="Re-new your name!"><i class="bi bi-info"></i></span>
+                            </div>
+                        </div>
+
+                        <!-- post current password -->
+                        <div class="mb-4 input-group">
+                            <span class="input-group-text"><i class="bi bi-key-fill"></i></span>
+                            <div class="form-floating">
+                                <input type="password" name="old-password" id="opassword" class="form-control" placeholder="old-password" value="<?php echo $adminResults->admin_password ?>" id="floatingInputGroup1" required>
+                                <label for="floatingInputGroup1">Current Password</label>
+                            </div>
+
+                            <!-- tooltips -->
+                            <div class="input-group-text">
+                                <span class="tt" data-bs-placement="bottom" title="How should we call you?"><i class="bi bi-info"></i></span>
+                            </div>
+                        </div>
+
+                        <!-- post new password -->
+                        <div class="mb-4 input-group">
+                            <span class="input-group-text"><i class="bi bi-key-fill"></i></span>
+
+                            <!-- set new password -->
+                            <div class="form-floating">
+                                <input type="password" name="new-password" id="opassword" class="form-control" placeholder="New" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
+                                    id="floatingInputGroup1" required>
+                                <label for="floatingInputGroup1">Set Password</label>
+                            </div>
+
+                            <!-- confirm your password -->
+                            <div class="form-floating">
+                                <input type="password" name="confirm-password" id="npassword" class="form-control" placeholder="Confirm" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
+                                    id="floatingInputGroup1" required>
+                                <label for="floatingInputGroup1">Confirm</label>
+                            </div>
+
+                            <!-- tooltips -->
+                            <div class="input-group-text">
+                                <span class="tt" data-bs-placement="bottom" title="Make sure they match!"><i class="bi bi-info"></i></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-4 text-center">
+                            <button type="submit" name="editinfo" class="btn btn-gold bi-send-check float-end"> Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <?php
+        include 'include/footer_front.html';
+    ?>
